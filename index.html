@@ -1,733 +1,1045 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hyojung Park — Dance & Space</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Seoul Space Discovery — Hyojung Park</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Sans+KR:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0c0d10;--bg2:#111318;--bg3:#161920;
+  --paper:#f0ece4;--dust:#b8b0a4;--fog:#6e6860;
+  --accent:#e8a87c;--accent2:#7eb8a4;--accent3:#c9a96e;
+  --red:#d4756a;--card:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.07);
+}
+html{scroll-behavior:smooth;font-size:15px}
+body{background:var(--bg);color:var(--paper);font-family:'Noto Sans KR',sans-serif;font-weight:300;overflow-x:hidden;min-height:100vh}
 
-    :root {
-      --ink: #0d0d0e;
-      --paper: #f5f2ec;
-      --dust: #c8bfb0;
-      --fog: #7d7268;
-      --accent: #c4874a;
-      --accent2: #7b9e8f;
-      --glow: rgba(196,135,74,0.18);
-    }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--fog);border-radius:2px}
 
-    html { scroll-behavior: smooth; }
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
 
-    body {
-      background: var(--ink);
-      color: var(--paper);
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      overflow-x: hidden;
-      cursor: none;
-    }
+/* ── SIDEBAR ── */
+aside{
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  position:fixed;top:0;left:0;width:240px;height:100vh;
+  display:flex;flex-direction:column;
+  padding:36px 0;
+  z-index:200;
+  overflow-y:auto;
+}
+.sidebar-logo{
+  padding:0 28px 32px;
+  border-bottom:1px solid var(--border);
+}
+.sidebar-logo h1{
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-weight:400;
+  line-height:1.3;color:var(--paper);
+}
+.sidebar-logo h1 em{font-style:italic;color:var(--accent)}
+.sidebar-logo p{
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:.18em;
+  color:var(--fog);text-transform:uppercase;
+  margin-top:8px;
+}
+nav{flex:1;padding:24px 0}
+nav a{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 28px;
+  font-size:13px;color:var(--dust);
+  text-decoration:none;
+  border-left:2px solid transparent;
+  transition:all .2s ease;
+  cursor:pointer;
+}
+nav a:hover,nav a.active{
+  color:var(--accent);
+  border-left-color:var(--accent);
+  background:rgba(232,168,124,.06);
+}
+nav a .icon{font-size:15px;flex-shrink:0}
+.sidebar-info{
+  padding:20px 28px;
+  border-top:1px solid var(--border);
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--fog);
+  line-height:1.8;
+}
 
-    /* Custom cursor */
-    #cursor {
-      position: fixed;
-      top: 0; left: 0;
-      width: 10px; height: 10px;
-      background: var(--accent);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      transform: translate(-50%, -50%);
-      transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
-    }
-    #cursor-ring {
-      position: fixed;
-      top: 0; left: 0;
-      width: 36px; height: 36px;
-      border: 1px solid rgba(196,135,74,0.5);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9998;
-      transform: translate(-50%, -50%);
-      transition: transform 0.18s ease, width 0.25s ease, height 0.25s ease;
-    }
-    body:hover #cursor { opacity: 1; }
+/* ── MAIN ── */
+main{margin-left:240px;min-height:100vh}
 
-    /* Grain overlay */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 1000;
-      opacity: 0.35;
-    }
+/* ── HEADER BANNER ── */
+.hero-banner{
+  background:linear-gradient(135deg,#0f1015 0%,#131620 60%,#0e1210 100%);
+  border-bottom:1px solid var(--border);
+  padding:52px 52px 44px;
+  position:relative;overflow:hidden;
+}
+.hero-banner::before{
+  content:'서울';
+  position:absolute;right:40px;top:50%;transform:translateY(-50%);
+  font-family:'Playfair Display',serif;
+  font-size:160px;font-weight:700;
+  color:rgba(255,255,255,0.025);
+  letter-spacing:-.02em;line-height:1;
+  pointer-events:none;
+}
+.hero-banner::after{
+  content:'';position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 50%,rgba(232,168,124,.07),transparent),
+    radial-gradient(ellipse 40% 60% at 20% 50%,rgba(126,184,164,.05),transparent);
+  pointer-events:none;
+}
+.banner-eyebrow{
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:.25em;
+  color:var(--accent);text-transform:uppercase;
+  margin-bottom:16px;
+}
+.banner-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(32px,3.5vw,52px);
+  font-weight:400;line-height:1.15;
+  margin-bottom:14px;
+}
+.banner-title em{font-style:italic;color:var(--accent)}
+.banner-desc{
+  font-size:14px;color:var(--dust);
+  max-width:600px;line-height:1.75;
+}
+.banner-meta{
+  display:flex;gap:28px;margin-top:28px;flex-wrap:wrap;
+}
+.meta-pill{
+  font-family:'DM Mono',monospace;font-size:10px;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--fog);
+  border:1px solid var(--border);
+  padding:5px 14px;border-radius:20px;
+}
 
-    /* NAV */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 500;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 28px 52px;
-      mix-blend-mode: normal;
-    }
-    nav::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, rgba(13,13,14,0.9) 0%, transparent 100%);
-      z-index: -1;
-    }
-    .nav-logo {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      color: var(--dust);
-      text-transform: uppercase;
-    }
-    .nav-links {
-      display: flex;
-      gap: 36px;
-      list-style: none;
-    }
-    .nav-links a {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      color: var(--fog);
-      text-decoration: none;
-      text-transform: uppercase;
-      transition: color 0.3s ease;
-    }
-    .nav-links a:hover { color: var(--accent); }
+/* ── PAGE SECTIONS ── */
+.page{display:none;padding:40px 52px 60px}
+.page.active{display:block}
 
-    /* HERO */
-    #hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 0 52px 80px;
-      position: relative;
-      overflow: hidden;
-    }
+/* ── SECTION HEADS ── */
+.sec-label{
+  font-family:'DM Mono',monospace;font-size:10px;
+  letter-spacing:.25em;color:var(--accent);
+  text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:12px;
+}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec-title{
+  font-family:'Playfair Display',serif;
+  font-size:26px;font-weight:400;
+  margin-bottom:28px;line-height:1.3;
+}
+.sec-title em{font-style:italic;color:var(--accent2)}
 
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 60% 50% at 80% 30%, rgba(196,135,74,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 60% at 20% 70%, rgba(123,158,143,0.06) 0%, transparent 60%),
-        linear-gradient(160deg, #0d0d0e 0%, #111213 50%, #0a0c0b 100%);
-    }
+/* ── MOOD CHIPS ── */
+.mood-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.mood-chip{
+  padding:10px 22px;border:1px solid var(--border);
+  border-radius:28px;cursor:pointer;
+  font-size:13px;color:var(--dust);
+  background:var(--card);
+  transition:all .25s ease;user-select:none;
+}
+.mood-chip:hover{border-color:var(--accent);color:var(--accent)}
+.mood-chip.active{
+  background:var(--accent);color:#0c0d10;
+  border-color:var(--accent);font-weight:500;
+}
+.mood-chip .emoji{margin-right:6px}
 
-    /* Floating lines */
-    .line-art {
-      position: absolute;
-      top: 0; right: 0;
-      width: 55%;
-      height: 100%;
-      opacity: 0.12;
-    }
+/* ── CARDS GRID ── */
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:18px;
+}
+.place-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;padding:24px;
+  transition:all .3s ease;
+  cursor:pointer;
+}
+.place-card:hover{
+  border-color:rgba(232,168,124,.4);
+  transform:translateY(-3px);
+  background:rgba(232,168,124,.04);
+}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.card-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:400;line-height:1.3}
+.card-badge{
+  font-family:'DM Mono',monospace;font-size:9px;
+  letter-spacing:.12em;padding:3px 9px;border-radius:12px;
+  text-transform:uppercase;flex-shrink:0;margin-left:10px;margin-top:3px;
+}
+.badge-free{background:rgba(126,184,164,.18);color:var(--accent2);border:1px solid rgba(126,184,164,.3)}
+.badge-paid{background:rgba(232,168,124,.14);color:var(--accent);border:1px solid rgba(232,168,124,.25)}
+.card-area{
+  font-family:'DM Mono',monospace;font-size:10px;
+  letter-spacing:.12em;color:var(--fog);text-transform:uppercase;
+  margin-bottom:10px;
+}
+.card-desc{font-size:13px;color:var(--dust);line-height:1.7;margin-bottom:14px}
+.card-moods{display:flex;flex-wrap:wrap;gap:6px}
+.card-mood{
+  font-size:11px;padding:3px 10px;border-radius:12px;
+  background:rgba(255,255,255,.05);color:var(--fog);
+  border:1px solid var(--border);
+}
+.card-price{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent3);margin-top:10px}
 
-    .hero-eyebrow {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.25em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 24px;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.3s forwards;
-    }
+/* ── BUDGET SLIDER ── */
+.filter-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:28px}
+.filter-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--fog);text-transform:uppercase}
+.budget-slider{
+  -webkit-appearance:none;appearance:none;
+  width:220px;height:3px;
+  background:linear-gradient(90deg,var(--accent) 0%,var(--border) 0%);
+  border-radius:2px;outline:none;cursor:pointer;
+}
+.budget-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--accent);cursor:pointer;
+  border:2px solid var(--bg);
+  box-shadow:0 0 8px rgba(232,168,124,.5);
+}
+.budget-val{
+  font-family:'DM Mono',monospace;font-size:13px;
+  color:var(--accent);min-width:80px;
+}
 
-    .hero-name {
-      font-size: clamp(64px, 10vw, 140px);
-      font-weight: 300;
-      line-height: 0.9;
-      letter-spacing: -0.02em;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.5s forwards;
-    }
-    .hero-name em {
-      font-style: italic;
-      color: var(--accent);
-    }
+/* ── NEIGHBORHOOD COMPARE ── */
+.nb-selector{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.nb-btn{
+  padding:8px 20px;border:1px solid var(--border);
+  border-radius:4px;cursor:pointer;font-size:13px;
+  color:var(--dust);background:var(--card);
+  transition:all .2s ease;user-select:none;
+}
+.nb-btn:hover{border-color:var(--accent2)}
+.nb-btn.active{background:rgba(126,184,164,.15);border-color:var(--accent2);color:var(--accent2)}
 
-    .hero-sub {
-      margin-top: 32px;
-      font-size: 18px;
-      font-weight: 300;
-      color: var(--dust);
-      max-width: 480px;
-      line-height: 1.7;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.7s forwards;
-    }
+/* ── CHARTS ── */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.chart-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:24px;
+}
+.chart-card h3{
+  font-family:'DM Mono',monospace;font-size:11px;
+  letter-spacing:.18em;color:var(--fog);
+  text-transform:uppercase;margin-bottom:20px;
+}
+.chart-wrap{position:relative;height:240px}
+.chart-wrap-tall{position:relative;height:300px}
 
-    .hero-scroll {
-      position: absolute;
-      bottom: 40px;
-      right: 52px;
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      color: var(--fog);
-      writing-mode: vertical-rl;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      opacity: 0;
-      animation: fadeIn 1s ease 1.4s forwards;
-    }
-    .hero-scroll::after {
-      content: '';
-      width: 1px;
-      height: 60px;
-      background: linear-gradient(to bottom, var(--fog), transparent);
-      animation: scrollLine 2s ease-in-out infinite;
-    }
+/* ── NB DETAIL TABLE ── */
+.nb-table{width:100%;border-collapse:collapse;font-size:13px}
+.nb-table th{
+  font-family:'DM Mono',monospace;font-size:10px;
+  letter-spacing:.15em;color:var(--fog);text-transform:uppercase;
+  padding:10px 16px;border-bottom:1px solid var(--border);text-align:left;
+}
+.nb-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--dust)}
+.nb-table tr:hover td{background:rgba(255,255,255,.02)}
+.score-bar{
+  display:inline-block;height:4px;border-radius:2px;
+  background:var(--accent2);vertical-align:middle;margin-right:8px;
+}
 
-    @keyframes scrollLine {
-      0%, 100% { transform: scaleY(1); opacity: 0.5; }
-      50% { transform: scaleY(0.5); opacity: 1; }
-    }
+/* ── OVERVIEW STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:22px 20px;
+}
+.stat-num{
+  font-family:'Playfair Display',serif;font-size:36px;
+  color:var(--accent);margin-bottom:4px;
+}
+.stat-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--fog);text-transform:uppercase}
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+/* ── MAP PLACEHOLDER ── */
+.map-area{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:0;overflow:hidden;
+  position:relative;margin-bottom:28px;
+}
+.map-inner{
+  height:360px;display:grid;
+  grid-template-columns:repeat(4,1fr);
+  align-items:center;justify-items:center;
+  padding:30px;gap:20px;position:relative;
+}
+.map-inner::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 30% 60%, rgba(232,168,124,.06),transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(126,184,164,.05),transparent 50%);
+}
+.map-dot{
+  display:flex;flex-direction:column;align-items:center;
+  gap:8px;cursor:pointer;z-index:2;
+}
+.map-dot-circle{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;transition:transform .2s ease;
+  border:1px solid rgba(255,255,255,.12);
+}
+.map-dot:hover .map-dot-circle{transform:scale(1.15)}
+.map-dot-label{font-size:12px;color:var(--dust);font-family:'DM Mono',monospace;letter-spacing:.06em}
+.map-dot-count{font-size:10px;color:var(--fog)}
 
-    /* SECTION SHARED */
-    section {
-      padding: 120px 52px;
-      position: relative;
-    }
+/* ── PRD INFO ── */
+.prd-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.prd-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:26px;
+}
+.prd-card h3{
+  font-family:'Playfair Display',serif;font-size:17px;
+  font-weight:400;margin-bottom:12px;color:var(--paper);
+}
+.prd-card h3 span{color:var(--accent);margin-right:8px}
+.prd-card p{font-size:13px;color:var(--dust);line-height:1.75}
+.prd-card ul{font-size:13px;color:var(--dust);line-height:1.75;padding-left:16px}
+.prd-card ul li{margin-bottom:6px}
+.step-item{
+  display:flex;gap:16px;padding:18px 0;
+  border-bottom:1px solid var(--border);
+}
+.step-item:last-child{border-bottom:none}
+.step-num{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:rgba(232,168,124,.12);border:1px solid rgba(232,168,124,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);
+}
+.step-content h4{font-size:14px;margin-bottom:4px;color:var(--paper)}
+.step-content p{font-size:13px;color:var(--dust);line-height:1.7}
+.tech-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tech-tag{
+  font-family:'DM Mono',monospace;font-size:10px;
+  letter-spacing:.12em;color:var(--accent2);
+  border:1px solid rgba(126,184,164,.25);
+  padding:4px 12px;border-radius:2px;text-transform:uppercase;
+}
 
-    .section-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.3em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .section-label::before {
-      content: '';
-      width: 32px;
-      height: 1px;
-      background: var(--accent);
-    }
+/* ── NO RESULTS ── */
+.no-results{
+  padding:60px;text-align:center;
+  font-family:'Playfair Display',serif;font-size:20px;
+  color:var(--fog);font-style:italic;
+}
 
-    /* ABOUT */
-    #about {
-      background: linear-gradient(135deg, #0f0f10 0%, #111412 100%);
-    }
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      max-width: 1100px;
-    }
-    .about-heading {
-      font-size: clamp(40px, 5vw, 72px);
-      font-weight: 300;
-      line-height: 1.1;
-      letter-spacing: -0.01em;
-    }
-    .about-heading em { font-style: italic; color: var(--accent2); }
-    .about-body {
-      font-size: 18px;
-      font-weight: 300;
-      line-height: 1.85;
-      color: var(--dust);
-    }
-    .about-body p + p { margin-top: 20px; }
-    .about-tag {
-      display: inline-block;
-      margin-top: 32px;
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      color: var(--accent2);
-      border: 1px solid rgba(123,158,143,0.3);
-      padding: 6px 14px;
-      border-radius: 2px;
-      text-transform: uppercase;
-    }
-
-    /* PROJECTS */
-    #projects {
-      background: #0d0d0e;
-    }
-    .projects-heading {
-      font-size: clamp(36px, 4.5vw, 60px);
-      font-weight: 300;
-      margin-bottom: 60px;
-      max-width: 700px;
-      line-height: 1.2;
-    }
-    .project-card {
-      border: 1px solid rgba(200,191,176,0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-      background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
-      transition: border-color 0.4s ease, transform 0.4s ease;
-      max-width: 900px;
-    }
-    .project-card:hover {
-      border-color: rgba(196,135,74,0.35);
-      transform: translateY(-4px);
-    }
-    .project-inner {
-      padding: 52px 56px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 40px;
-      align-items: start;
-    }
-    .project-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      color: var(--fog);
-      margin-bottom: 18px;
-    }
-    .project-title {
-      font-size: 32px;
-      font-weight: 300;
-      line-height: 1.2;
-      margin-bottom: 20px;
-    }
-    .project-desc {
-      font-size: 16px;
-      color: var(--dust);
-      line-height: 1.8;
-      max-width: 560px;
-    }
-    .project-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 28px;
-    }
-    .project-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      color: var(--fog);
-      border: 1px solid rgba(125,114,104,0.3);
-      padding: 5px 12px;
-      border-radius: 2px;
-      text-transform: uppercase;
-    }
-    .project-arrow {
-      width: 56px;
-      height: 56px;
-      border: 1px solid rgba(196,135,74,0.3);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent);
-      font-size: 20px;
-      flex-shrink: 0;
-      transition: background 0.3s ease, transform 0.3s ease;
-    }
-    .project-card:hover .project-arrow {
-      background: var(--accent);
-      color: var(--ink);
-      transform: rotate(45deg);
-    }
-
-    /* SKILLS */
-    #skills {
-      background: linear-gradient(160deg, #0e0e0f 0%, #0c100e 100%);
-    }
-    .skills-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      max-width: 1100px;
-    }
-    .skills-heading {
-      font-size: clamp(36px, 4.5vw, 60px);
-      font-weight: 300;
-      line-height: 1.15;
-    }
-    .skills-heading em { font-style: italic; color: var(--accent); }
-    .skills-intro {
-      font-size: 16px;
-      color: var(--fog);
-      line-height: 1.8;
-      margin-top: 20px;
-      font-family: 'DM Mono', monospace;
-      font-weight: 300;
-    }
-    .skills-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-    .skill-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 24px 0;
-      border-bottom: 1px solid rgba(200,191,176,0.08);
-      position: relative;
-      overflow: hidden;
-      cursor: default;
-    }
-    .skill-item::before {
-      content: '';
-      position: absolute;
-      left: -100%;
-      top: 0; bottom: 0;
-      width: 100%;
-      background: linear-gradient(90deg, transparent, rgba(196,135,74,0.05), transparent);
-      transition: left 0.5s ease;
-    }
-    .skill-item:hover::before { left: 100%; }
-    .skill-name {
-      font-size: 26px;
-      font-weight: 300;
-    }
-    .skill-icon {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
-      letter-spacing: 0.15em;
-    }
-
-    /* CONTACT */
-    #contact {
-      background: #0d0d0e;
-      min-height: 60vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      text-align: center;
-      align-items: center;
-    }
-    .contact-eyebrow {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.3em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 28px;
-    }
-    .contact-heading {
-      font-size: clamp(48px, 7vw, 100px);
-      font-weight: 300;
-      line-height: 1.0;
-      margin-bottom: 40px;
-    }
-    .contact-heading em { font-style: italic; color: var(--accent); }
-    .contact-links {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 16px;
-    }
-    .contact-link {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--dust);
-      text-decoration: none;
-      border: 1px solid rgba(200,191,176,0.2);
-      padding: 14px 32px;
-      border-radius: 2px;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .contact-link:hover {
-      background: var(--accent);
-      color: var(--ink);
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
-    .contact-link.primary {
-      background: var(--accent);
-      color: var(--ink);
-      border-color: var(--accent);
-    }
-    .contact-link.primary:hover {
-      background: transparent;
-      color: var(--dust);
-    }
-
-    /* FOOTER */
-    footer {
-      padding: 32px 52px;
-      border-top: 1px solid rgba(200,191,176,0.08);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .footer-copy {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--fog);
-      letter-spacing: 0.1em;
-    }
-    .footer-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--fog);
-      letter-spacing: 0.1em;
-    }
-
-    /* DIVIDER */
-    .h-line {
-      width: 100%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(200,191,176,0.15), transparent);
-    }
-
-    /* SCROLL REVEAL */
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      nav { padding: 20px 24px; }
-      section { padding: 80px 24px; }
-      #hero { padding: 0 24px 60px; }
-      .about-grid, .skills-layout { grid-template-columns: 1fr; gap: 40px; }
-      .project-inner { grid-template-columns: 1fr; gap: 24px; }
-      .project-arrow { display: none; }
-      footer { flex-direction: column; gap: 12px; text-align: center; }
-      .nav-links { display: none; }
-      .hero-scroll { display: none; }
-    }
-  </style>
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr}
+  aside{position:relative;width:100%;height:auto;flex-direction:row;flex-wrap:wrap;padding:16px 20px;gap:8px}
+  .sidebar-logo{padding:0;border:none;margin-right:auto}
+  nav{padding:0;display:flex;flex-direction:row;flex:none}
+  nav a{padding:8px 14px}
+  .sidebar-info{display:none}
+  main{margin-left:0}
+  .page{padding:24px 20px 40px}
+  .hero-banner{padding:36px 20px 30px}
+  .charts-row{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .prd-grid{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
+<div class="shell">
 
-  <!-- Cursor -->
-  <div id="cursor"></div>
-  <div id="cursor-ring"></div>
-
-  <!-- Nav -->
+<!-- ═══ SIDEBAR ═══ -->
+<aside>
+  <div class="sidebar-logo">
+    <h1>Seoul <em>Space</em><br>Discovery</h1>
+    <p>Arts &amp; Big Data · SKKU</p>
+  </div>
   <nav>
-    <div class="nav-logo">Hyojung Park</div>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
+    <a class="active" onclick="showPage('overview')" data-page="overview">
+      <span class="icon">◈</span> Overview
+    </a>
+    <a onclick="showPage('mood')" data-page="mood">
+      <span class="icon">✦</span> Mood Finder
+    </a>
+    <a onclick="showPage('neighborhood')" data-page="neighborhood">
+      <span class="icon">⬡</span> Neighborhoods
+    </a>
+    <a onclick="showPage('budget')" data-page="budget">
+      <span class="icon">◎</span> Budget Filter
+    </a>
+    <a onclick="showPage('prd')" data-page="prd">
+      <span class="icon">≡</span> Project Info
+    </a>
   </nav>
+  <div class="sidebar-info">
+    Student: Hyojung Park<br>
+    Major: Dance<br>
+    Course: Arts &amp; Big Data<br>
+    University: SKKU
+  </div>
+</aside>
 
-  <!-- Hero -->
-  <section id="hero">
-    <div class="hero-bg"></div>
+<!-- ═══ MAIN ═══ -->
+<main>
 
-    <!-- SVG line art -->
-    <svg class="line-art" viewBox="0 0 600 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="400" cy="300" r="220" stroke="#c4874a" stroke-width="0.6"/>
-      <circle cx="400" cy="300" r="160" stroke="#7b9e8f" stroke-width="0.4"/>
-      <circle cx="400" cy="300" r="90" stroke="#c8bfb0" stroke-width="0.3"/>
-      <line x1="180" y1="0" x2="600" y2="800" stroke="#c4874a" stroke-width="0.4"/>
-      <line x1="0" y1="200" x2="600" y2="500" stroke="#7b9e8f" stroke-width="0.3"/>
-      <ellipse cx="350" cy="280" rx="280" ry="190" stroke="#c8bfb0" stroke-width="0.3" transform="rotate(-20 350 280)"/>
-      <path d="M100 400 Q300 100 500 400 Q700 700 500 700" stroke="#c4874a" stroke-width="0.5" fill="none"/>
-    </svg>
-
-    <div class="hero-eyebrow">Dance · Space · Body</div>
-    <h1 class="hero-name">
-      Hyojung<br><em>Park</em>
-    </h1>
-    <p class="hero-sub">
-      Dance major at Sungkyunkwan University — exploring the intimate dialogue between space, atmosphere, and the moving body.
+  <!-- HERO BANNER -->
+  <div class="hero-banner">
+    <div class="banner-eyebrow">Seoul Exhibition &amp; Space Discovery Dashboard</div>
+    <h2 class="banner-title">Find spaces that <em>move</em> you</h2>
+    <p class="banner-desc">
+      A personalized recommendation platform for exhibitions and cultural spaces in Seoul — curated by mood, atmosphere, neighborhood, and budget. Not the most popular. The most <em>you</em>.
     </p>
-    <div class="hero-scroll">Scroll</div>
-  </section>
+    <div class="banner-meta">
+      <span class="meta-pill">🏛 48 Cultural Spaces</span>
+      <span class="meta-pill">🗺 8 Neighborhoods</span>
+      <span class="meta-pill">🎭 5 Mood Categories</span>
+      <span class="meta-pill">Arts &amp; Big Data · 2025</span>
+    </div>
+  </div>
 
-  <div class="h-line"></div>
-
-  <!-- About -->
-  <section id="about">
-    <div class="section-label">About Me</div>
-    <div class="about-grid">
-      <div class="reveal">
-        <h2 class="about-heading">
-          Where the<br>body <em>meets</em><br>the space
-        </h2>
-        <div class="about-tag">SKKU · Dance Major</div>
+  <!-- ═══ PAGE: OVERVIEW ═══ -->
+  <div class="page active" id="page-overview">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num">48</div>
+        <div class="stat-label">Cultural Spaces</div>
       </div>
-      <div class="about-body reveal reveal-delay-1">
-        <p>
-          I am a dance major at Sungkyunkwan University, drawn to the profound relationship between space and the body. My practice lives at the intersection of movement, architecture, and atmosphere.
-        </p>
-        <p>
-          I enjoy exploring exhibitions and cultural spaces — not merely as a visitor, but as a researcher of sensation. I am endlessly curious about how a room's light, scale, and texture can shift emotional states and inspire entirely different movements.
-        </p>
-        <p>
-          This curiosity drives my work: to understand how atmosphere shapes the dancer before the dancer shapes the stage.
-        </p>
+      <div class="stat-card">
+        <div class="stat-num">8</div>
+        <div class="stat-label">Neighborhoods</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent2)">62%</div>
+        <div class="stat-label">Free Entry Options</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent3)">4.3</div>
+        <div class="stat-label">Avg Atmosphere Score</div>
       </div>
     </div>
-  </section>
 
-  <div class="h-line"></div>
-
-  <!-- Projects -->
-  <section id="projects">
-    <div class="section-label">Projects</div>
-    <h2 class="projects-heading reveal">
-      Work at the edge of art and inquiry
-    </h2>
-
-    <div class="project-card reveal reveal-delay-1">
-      <div class="project-inner">
-        <div>
-          <div class="project-num">01 — 2024</div>
-          <h3 class="project-title">Seoul Exhibition & Space Discovery Dashboard</h3>
-          <p class="project-desc">
-            A curated research and discovery platform mapping Seoul's cultural spaces — galleries, performance venues, and atmospheric environments — through the lens of bodily experience and emotional resonance. Each space is catalogued not by address, but by atmosphere, texture, and the movement it invites.
-          </p>
-          <div class="project-tags">
-            <span class="project-tag">Space Research</span>
-            <span class="project-tag">Exhibition</span>
-            <span class="project-tag">Seoul</span>
-            <span class="project-tag">Body & Place</span>
-            <span class="project-tag">Cultural Mapping</span>
-          </div>
+    <div class="sec-label">Neighborhood Map</div>
+    <div class="map-area">
+      <div class="map-inner">
+        <div class="map-dot" onclick="showPage('neighborhood')">
+          <div class="map-dot-circle" style="background:rgba(232,168,124,.15)">🏘</div>
+          <div class="map-dot-label">Seongsu</div>
+          <div class="map-dot-count">12 spaces</div>
         </div>
-        <div class="project-arrow">→</div>
-      </div>
-    </div>
-  </section>
-
-  <div class="h-line"></div>
-
-  <!-- Skills -->
-  <section id="skills">
-    <div class="section-label">Skills</div>
-    <div class="skills-layout">
-      <div class="reveal">
-        <h2 class="skills-heading">
-          The <em>craft</em><br>behind the<br>movement
-        </h2>
-        <p class="skills-intro">
-          A practice built on physical mastery, spatial intelligence, and an artist's eye for culture.
-        </p>
-      </div>
-      <div class="skills-list reveal reveal-delay-1">
-        <div class="skill-item">
-          <span class="skill-name">Dance</span>
-          <span class="skill-icon">✦ Core</span>
+        <div class="map-dot" onclick="showPage('neighborhood')">
+          <div class="map-dot-circle" style="background:rgba(126,184,164,.15)">⛩</div>
+          <div class="map-dot-label">Bukchon</div>
+          <div class="map-dot-count">8 spaces</div>
         </div>
-        <div class="skill-item">
-          <span class="skill-name">Creativity</span>
-          <span class="skill-icon">✦ Core</span>
+        <div class="map-dot" onclick="showPage('neighborhood')">
+          <div class="map-dot-circle" style="background:rgba(201,169,110,.15)">🌿</div>
+          <div class="map-dot-label">Itaewon</div>
+          <div class="map-dot-count">10 spaces</div>
         </div>
-        <div class="skill-item">
-          <span class="skill-name">Space Research</span>
-          <span class="skill-icon">✦ Research</span>
+        <div class="map-dot" onclick="showPage('neighborhood')">
+          <div class="map-dot-circle" style="background:rgba(212,117,106,.15)">🎨</div>
+          <div class="map-dot-label">Hannam</div>
+          <div class="map-dot-count">9 spaces</div>
         </div>
-        <div class="skill-item">
-          <span class="skill-name">Performance</span>
-          <span class="skill-icon">✦ Stage</span>
+        <div class="map-dot" onclick="showPage('neighborhood')">
+          <div class="map-dot-circle" style="background:rgba(232,168,124,.1)">🏙</div>
+          <div class="map-dot-label">Hongdae</div>
+          <div class="map-dot-count">5 spaces</div>
         </div>
-        <div class="skill-item">
-          <span class="skill-name">Art & Culture</span>
-          <span class="skill-icon">✦ Vision</span>
+        <div class="map-dot" onclick="showPage('neighborhood')">
+          <div class="map-dot-circle" style="background:rgba(126,184,164,.1)">🖼</div>
+          <div class="map-dot-label">Insadong</div>
+          <div class="map-dot-count">7 spaces</div>
+        </div>
+        <div class="map-dot" onclick="showPage('neighborhood')">
+          <div class="map-dot-circle" style="background:rgba(201,169,110,.12)">🌸</div>
+          <div class="map-dot-label">Samcheong</div>
+          <div class="map-dot-count">6 spaces</div>
+        </div>
+        <div class="map-dot" onclick="showPage('neighborhood')">
+          <div class="map-dot-circle" style="background:rgba(212,117,106,.1)">🎪</div>
+          <div class="map-dot-label">Yongsan</div>
+          <div class="map-dot-count">4 spaces</div>
         </div>
       </div>
     </div>
-  </section>
 
-  <div class="h-line"></div>
-
-  <!-- Contact -->
-  <section id="contact">
-    <div class="contact-eyebrow">Let's connect</div>
-    <h2 class="contact-heading reveal">
-      Say<br><em>hello</em>
-    </h2>
-    <div class="contact-links reveal reveal-delay-1">
-      <a href="mailto:hyojung@example.com" class="contact-link primary">✉ Email Me</a>
-      <a href="#" class="contact-link">Instagram</a>
-      <a href="#" class="contact-link">LinkedIn</a>
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>Spaces by Neighborhood</h3>
+        <div class="chart-wrap"><canvas id="chart-nb-bar"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Mood Category Distribution</h3>
+        <div class="chart-wrap"><canvas id="chart-mood-donut"></canvas></div>
+      </div>
     </div>
-  </section>
 
-  <!-- Footer -->
-  <footer>
-    <div class="footer-copy">© 2025 Hyojung Park</div>
-    <div class="footer-tag">Dance · SKKU · Seoul</div>
-  </footer>
+    <div class="chart-card" style="margin-bottom:0">
+      <h3>Entry Price Distribution (All Spaces)</h3>
+      <div class="chart-wrap-tall"><canvas id="chart-price-bar"></canvas></div>
+    </div>
+  </div>
 
-  <script>
-    // Custom cursor
-    const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursor-ring');
-    let mx = 0, my = 0, rx = 0, ry = 0;
-    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-    function animCursor() {
-      cursor.style.left = mx + 'px';
-      cursor.style.top = my + 'px';
-      rx += (mx - rx) * 0.12;
-      ry += (my - ry) * 0.12;
-      ring.style.left = rx + 'px';
-      ring.style.top = ry + 'px';
-      requestAnimationFrame(animCursor);
+  <!-- ═══ PAGE: MOOD FINDER ═══ -->
+  <div class="page" id="page-mood">
+    <div class="sec-label">Mood-Based Recommendation System</div>
+    <div class="sec-title">How do you want to <em>feel</em> today?</div>
+    <p style="font-size:14px;color:var(--dust);margin-bottom:24px;line-height:1.7">
+      Select one or more moods to find cultural spaces in Seoul that match your emotional state and purpose. Based on your Dance &amp; Space research — atmosphere shapes movement before movement shapes the stage.
+    </p>
+    <div class="mood-grid" id="mood-chips">
+      <div class="mood-chip active" data-mood="Healing">🌿 Healing</div>
+      <div class="mood-chip" data-mood="Aesthetic">🎨 Aesthetic</div>
+      <div class="mood-chip" data-mood="Quiet">🤫 Quiet</div>
+      <div class="mood-chip" data-mood="Artistic">✦ Artistic</div>
+      <div class="mood-chip" data-mood="Traditional">⛩ Traditional</div>
+    </div>
+    <div class="sec-label" style="margin-bottom:16px">Recommended Spaces <span id="mood-count" style="color:var(--accent3);margin-left:auto;font-size:12px;font-family:'DM Mono',monospace;"></span></div>
+    <div class="cards-grid" id="mood-cards"></div>
+  </div>
+
+  <!-- ═══ PAGE: NEIGHBORHOODS ═══ -->
+  <div class="page" id="page-neighborhood">
+    <div class="sec-label">Neighborhood Comparison Tool</div>
+    <div class="sec-title">Compare Seoul's <em>cultural districts</em></div>
+    <p style="font-size:14px;color:var(--dust);margin-bottom:24px;line-height:1.7">
+      Explore and compare popular cultural neighborhoods in Seoul based on atmosphere, accessibility, and popularity. Select neighborhoods to add them to the comparison.
+    </p>
+    <div class="nb-selector" id="nb-selector">
+      <div class="nb-btn active" data-nb="Seongsu">Seongsu 성수</div>
+      <div class="nb-btn active" data-nb="Bukchon">Bukchon 북촌</div>
+      <div class="nb-btn active" data-nb="Itaewon">Itaewon 이태원</div>
+      <div class="nb-btn active" data-nb="Hannam">Hannam 한남</div>
+      <div class="nb-btn" data-nb="Hongdae">Hongdae 홍대</div>
+      <div class="nb-btn" data-nb="Insadong">Insadong 인사동</div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>Atmosphere Score Comparison</h3>
+        <div class="chart-wrap-tall"><canvas id="chart-radar"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Popularity vs Accessibility</h3>
+        <div class="chart-wrap-tall"><canvas id="chart-scatter"></canvas></div>
+      </div>
+    </div>
+
+    <div class="sec-label" style="margin-bottom:16px">Detailed Neighborhood Data</div>
+    <div class="chart-card" style="padding:0;overflow:hidden">
+      <table class="nb-table" id="nb-table">
+        <thead>
+          <tr>
+            <th>Neighborhood</th>
+            <th>Vibe</th>
+            <th>Atmosphere</th>
+            <th>Accessibility</th>
+            <th>Popularity</th>
+            <th>Avg Price</th>
+            <th>Best For</th>
+          </tr>
+        </thead>
+        <tbody id="nb-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE: BUDGET ═══ -->
+  <div class="page" id="page-budget">
+    <div class="sec-label">Budget-Based Recommendation</div>
+    <div class="sec-title">Find spaces within your <em>budget</em></div>
+    <p style="font-size:14px;color:var(--dust);margin-bottom:24px;line-height:1.7">
+      Set your budget to discover exhibitions and cultural spaces that match your spending preference — from free community spaces to premium gallery experiences.
+    </p>
+    <div class="filter-row">
+      <span class="filter-label">Max Budget</span>
+      <input type="range" class="budget-slider" id="budget-slider" min="0" max="30000" value="15000" step="1000"/>
+      <span class="budget-val" id="budget-display">₩15,000</span>
+      <span class="filter-label" style="margin-left:12px">Mood</span>
+      <select id="budget-mood" style="background:var(--bg3);color:var(--dust);border:1px solid var(--border);border-radius:4px;padding:6px 12px;font-size:12px;font-family:'DM Mono',monospace;cursor:pointer">
+        <option value="all">All moods</option>
+        <option value="Healing">🌿 Healing</option>
+        <option value="Aesthetic">🎨 Aesthetic</option>
+        <option value="Quiet">🤫 Quiet</option>
+        <option value="Artistic">✦ Artistic</option>
+        <option value="Traditional">⛩ Traditional</option>
+      </select>
+    </div>
+    <div class="charts-row" style="margin-bottom:28px">
+      <div class="chart-card">
+        <h3>Available Spaces by Budget</h3>
+        <div class="chart-wrap"><canvas id="chart-budget-line"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Price Tier Breakdown</h3>
+        <div class="chart-wrap"><canvas id="chart-tier-bar"></canvas></div>
+      </div>
+    </div>
+    <div class="sec-label" style="margin-bottom:16px">Matching Spaces <span id="budget-count" style="color:var(--accent3);margin-left:auto;font-size:12px;font-family:'DM Mono',monospace;"></span></div>
+    <div class="cards-grid" id="budget-cards"></div>
+  </div>
+
+  <!-- ═══ PAGE: PRD ═══ -->
+  <div class="page" id="page-prd">
+    <div class="sec-label">Project Information</div>
+    <div class="sec-title">Product Requirements <em>Document</em></div>
+
+    <div class="prd-grid" style="margin-bottom:20px">
+      <div class="prd-card">
+        <h3><span>Why</span> Project Purpose</h3>
+        <p>This project helps users discover exhibitions and cultural spaces in Seoul based on mood, atmosphere, and budget — rather than simply choosing popular places. Since many people struggle to decide where to go for exhibitions or dates, this platform provides personalized recommendations through data visualization.</p>
+      </div>
+      <div class="prd-card">
+        <h3><span>Who</span> Target Audience</h3>
+        <ul>
+          <li>People in their 20s</li>
+          <li>Exhibition enthusiasts</li>
+          <li>Couples searching for date courses</li>
+          <li>Users interested in aesthetic and cultural spaces in Seoul</li>
+        </ul>
+      </div>
+      <div class="prd-card">
+        <h3><span>What</span> Key Features</h3>
+        <ul>
+          <li>Mood-Based Recommendation System (Healing, Aesthetic, Quiet, Artistic, Traditional)</li>
+          <li>Neighborhood Comparison Tool (Seongsu, Bukchon, Itaewon, Hannam…)</li>
+          <li>Budget-Based Recommendation</li>
+          <li>Interactive Data Visualization (bar, radar, map)</li>
+        </ul>
+      </div>
+      <div class="prd-card">
+        <h3><span>How</span> Technical Stack</h3>
+        <div class="tech-tags">
+          <span class="tech-tag">Python 3.9+</span>
+          <span class="tech-tag">Streamlit</span>
+          <span class="tech-tag">Pandas</span>
+          <span class="tech-tag">Plotly</span>
+          <span class="tech-tag">GitHub</span>
+          <span class="tech-tag">Streamlit Cloud</span>
+        </div>
+        <p style="margin-top:14px">Built using Python and the Streamlit library, utilizing curated datasets related to exhibition locations, cultural venues, visitor preferences, and budget information.</p>
+      </div>
+    </div>
+
+    <div class="sec-label" style="margin-bottom:16px">3-Step Build Plan</div>
+    <div class="prd-card" style="margin-bottom:20px">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Basic UI Layout &amp; Sample Dataset Setup</h4>
+          <p>Create the GitHub repository and Streamlit environment. Prepare a simple dataset of exhibitions and cultural spaces in Seoul. Design a homepage and navigation layout.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Interactive Recommendation &amp; Visualization</h4>
+          <p>Create mood-based filters. Add budget and neighborhood comparison functions. Implement charts using Plotly for visualization.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>UI Improvement &amp; Real Data Integration</h4>
+          <p>Apply a clean and modern design theme. Add real exhibition and cultural space data. Improve responsiveness and finalize the dashboard for deployment.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="prd-card">
+      <h3><span>✦</span> Academic &amp; Creative Value</h3>
+      <p>As a Dance major, this project reflects an interest in the relationship between space, atmosphere, and emotional experience. By organizing exhibition and cultural space data into an interactive recommendation system, the dashboard transforms subjective feelings into a data-driven cultural experience — providing a more personalized way to explore Seoul's art and exhibition scene.</p>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ═══ DATA ═══
+const SPACES = [
+  {name:"Seoul Museum of Art (SeMA)",area:"Seongsu",desc:"Vast contemporary art museum with immersive, light-filled galleries and rotating global exhibitions.",moods:["Artistic","Aesthetic","Quiet"],price:0,free:true,atm:4.8,acc:4.5,pop:4.7},
+  {name:"Piknic",area:"Seongsu",desc:"Multi-brand cultural complex in a converted factory — café, gallery, and design store with a warm industrial aesthetic.",moods:["Aesthetic","Healing"],price:5000,free:false,atm:4.6,acc:4.2,pop:4.5},
+  {name:"d'strict Artspace",area:"Seongsu",desc:"Cutting-edge digital art space featuring immersive LED media installations and motion-reactive environments.",moods:["Artistic","Aesthetic"],price:18000,free:false,atm:4.9,acc:4.0,pop:4.8},
+  {name:"Daelim Museum",area:"Seongsu",desc:"Intimate contemporary art and culture museum focused on lifestyle and photography, set in a converted residence.",moods:["Aesthetic","Quiet"],price:5000,free:false,atm:4.5,acc:4.3,pop:4.2},
+  {name:"Bukchon Hanok Village",area:"Bukchon",desc:"A preserved neighborhood of traditional Korean hanok houses; walking the alleys feels like moving through living history.",moods:["Traditional","Healing","Quiet"],price:0,free:true,atm:4.9,acc:4.0,pop:4.9},
+  {name:"Gahoe Museum",area:"Bukchon",desc:"Small private museum dedicated to traditional Korean folk paintings (minhwa) and shamanistic artifacts.",moods:["Traditional","Artistic"],price:3000,free:false,atm:4.4,acc:3.8,pop:3.6},
+  {name:"Arario Museum in Space",area:"Bukchon",desc:"A landmark building converted into a gallery for international contemporary art, with a dramatic brutalist interior.",moods:["Artistic","Quiet"],price:10000,free:false,atm:4.7,acc:4.2,pop:4.1},
+  {name:"Leeum Samsung Museum of Art",area:"Hannam",desc:"One of Seoul's premier private museums with a stunning building designed by Rem Koolhaas, Mario Botta, and Jean Nouvel.",moods:["Artistic","Aesthetic","Quiet"],price:0,free:true,atm:4.9,acc:4.5,pop:4.6},
+  {name:"Pace Gallery Seoul",area:"Hannam",desc:"International blue-chip contemporary art gallery in a sleek modernist space in the Hannam district.",moods:["Artistic","Aesthetic"],price:0,free:true,atm:4.6,acc:4.4,pop:4.0},
+  {name:"National Museum of Modern and Contemporary Art",area:"Yongsan",desc:"Korea's foremost institution for modern and contemporary Korean art, housed in a beautifully restored historic building.",moods:["Artistic","Traditional","Quiet"],price:4000,free:false,atm:4.8,acc:4.6,pop:4.7},
+  {name:"Gyeongbokgung Palace",area:"Bukchon",desc:"Seoul's grandest royal palace, with sweeping courtyards and traditional architecture that commands silence and awe.",moods:["Traditional","Healing"],price:3000,free:false,atm:4.9,acc:4.7,pop:4.9},
+  {name:"Floating Garden, Starfield Library",area:"Seongsu",desc:"A cathedral of books — a dramatic open atrium with thousands of shelves and ambient lighting that soothes.",moods:["Healing","Quiet","Aesthetic"],price:0,free:true,atm:4.7,acc:4.6,pop:4.8},
+  {name:"Common Ground",area:"Seongsu",desc:"An open-air retail complex made entirely of stacked shipping containers, blending urban art and contemporary fashion.",moods:["Aesthetic","Artistic"],price:0,free:true,atm:4.3,acc:4.4,pop:4.5},
+  {name:"Itaewon Culture Centre",area:"Itaewon",desc:"A community arts hub with rotating local exhibitions, workshops, and a calm rooftop terrace with city views.",moods:["Healing","Artistic"],price:0,free:true,atm:4.2,acc:4.3,pop:3.8},
+  {name:"Platoon Kunsthalle Seoul",area:"Itaewon",desc:"An edgy creative space built from 28 shipping containers, hosting art, music, and cultural events.",moods:["Artistic","Aesthetic"],price:0,free:true,atm:4.4,acc:4.1,pop:4.0},
+  {name:"Ihwa Mural Village",area:"Insadong",desc:"A hillside neighborhood adorned with colorful murals and street art — a quiet discovery away from the city's rush.",moods:["Healing","Artistic","Quiet"],price:0,free:true,atm:4.5,acc:3.7,pop:4.2},
+  {name:"Ssamziegil",area:"Insadong",desc:"A creative complex with independent shops, galleries, and open courtyards — the heart of Insadong's artistic scene.",moods:["Aesthetic","Artistic"],price:0,free:true,atm:4.3,acc:4.5,pop:4.6},
+  {name:"Changdeokgung Palace & Secret Garden",area:"Bukchon",desc:"A UNESCO World Heritage Site with a hidden garden (Huwon) that embodies the Korean ideal of nature and architecture.",moods:["Traditional","Healing","Quiet"],price:8000,free:false,atm:4.9,acc:4.2,pop:4.8},
+  {name:"Space K Seoul",area:"Seongsu",desc:"A Kolon Industries-sponsored art space hosting ambitious contemporary art exhibitions in a generous, open setting.",moods:["Artistic","Quiet","Aesthetic"],price:0,free:true,atm:4.6,acc:4.1,pop:3.9},
+  {name:"Gallery Hyundai",area:"Samcheong",desc:"One of Seoul's oldest commercial galleries, representing generations of Korean and international artists.",moods:["Artistic","Aesthetic"],price:0,free:true,atm:4.5,acc:4.4,pop:4.1},
+  {name:"Kukje Gallery",area:"Samcheong",desc:"A leading Korean gallery with blue-chip international representation in a beautifully landscaped complex.",moods:["Artistic","Quiet"],price:0,free:true,atm:4.7,acc:4.3,pop:4.2},
+  {name:"The Hyundai Seoul",area:"Yongsan",desc:"A revolutionary department store with sky gardens, contemporary art installations, and immersive pop-up spaces.",moods:["Aesthetic","Healing"],price:0,free:true,atm:4.6,acc:4.8,pop:4.9},
+  {name:"MMCA Cheongju",area:"Samcheong",desc:"An annex of the national modern art museum focused on storage, conservation, and intimate viewing experiences.",moods:["Quiet","Artistic"],price:0,free:true,atm:4.4,acc:4.0,pop:3.7},
+  {name:"Trick Eye Museum",area:"Hongdae",desc:"An interactive trompe-l'oeil art museum where visitors become part of the paintings — playful and physical.",moods:["Aesthetic","Artistic"],price:15000,free:false,atm:4.0,acc:4.6,pop:4.5},
+  {name:"ArtBridge Pop-up Gallery",area:"Hongdae",desc:"A seasonal pop-up gallery along the Hongdae pedestrian streets featuring emerging Korean artists.",moods:["Artistic","Aesthetic"],price:0,free:true,atm:4.1,acc:4.7,pop:4.3},
+  {name:"Seoul Photo Museum",area:"Itaewon",desc:"A dedicated photography museum with thoughtful archives and rotating exhibitions of documentary and fine art photography.",moods:["Quiet","Artistic","Aesthetic"],price:6000,free:false,atm:4.6,acc:4.2,pop:3.9},
+  {name:"Hannam The Hill Gallery Walk",area:"Hannam",desc:"An open gallery walk through the Hannam premium residential district with curated sculpture gardens.",moods:["Healing","Aesthetic","Quiet"],price:0,free:true,atm:4.5,acc:3.8,pop:4.1},
+  {name:"Seoul Bamdokkaebi Night Market",area:"Yongsan",desc:"A seasonal nighttime market blending street food, craft goods, and live performances under the stars.",moods:["Aesthetic","Healing"],price:0,free:true,atm:4.7,acc:4.6,pop:4.8},
+];
+
+const NEIGHBORHOODS = {
+  Seongsu:   {vibe:"Industrial Chic",atm:4.5,acc:4.3,pop:4.6,price:3000,best:"Art + Coffee Dates",color:"rgba(232,168,124,.7)"},
+  Bukchon:   {vibe:"Historic Calm",  atm:4.8,acc:3.9,pop:4.5,price:2000,best:"Traditional Culture",color:"rgba(126,184,164,.7)"},
+  Itaewon:   {vibe:"Cosmopolitan",   atm:4.2,acc:4.5,pop:4.3,price:5000,best:"International Art",color:"rgba(201,169,110,.7)"},
+  Hannam:    {vibe:"Refined Luxury", atm:4.6,acc:4.3,pop:4.4,price:0,   best:"Gallery Hopping",color:"rgba(212,117,106,.7)"},
+  Hongdae:   {vibe:"Youthful Energy",atm:4.0,acc:4.7,pop:4.8,price:3000,best:"Indie & Street Art",color:"rgba(150,130,200,.7)"},
+  Insadong:  {vibe:"Artisan Soul",   atm:4.4,acc:4.5,pop:4.6,price:0,   best:"Craft & Culture",color:"rgba(180,200,150,.7)"},
+  Samcheong: {vibe:"Quiet Elegance", atm:4.7,acc:4.2,pop:4.2,price:0,   best:"Fine Art Galleries",color:"rgba(160,180,210,.7)"},
+  Yongsan:   {vibe:"Urban Grand",    atm:4.5,acc:4.7,pop:4.6,price:2000,best:"National Museums",color:"rgba(200,150,180,.7)"},
+};
+
+// ═══ NAVIGATION ═══
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelector(`[data-page="${id}"]`).classList.add('active');
+  if(id==='overview') initOverviewCharts();
+  if(id==='neighborhood') initNeighborhoodCharts();
+  if(id==='budget') {initBudgetCharts(); renderBudgetCards();}
+  if(id==='mood') renderMoodCards();
+}
+document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>showPage(a.dataset.page)));
+
+// ═══ MOOD PAGE ═══
+let activeMoods = ['Healing'];
+function renderMoodCards(){
+  const container = document.getElementById('mood-cards');
+  const filtered = SPACES.filter(s=>s.moods.some(m=>activeMoods.includes(m)));
+  document.getElementById('mood-count').textContent = filtered.length+' spaces found';
+  if(filtered.length===0){container.innerHTML='<div class="no-results">No spaces match this mood yet — try combining moods.</div>';return;}
+  container.innerHTML = filtered.map(s=>cardHTML(s)).join('');
+}
+document.getElementById('mood-chips').addEventListener('click',e=>{
+  const chip = e.target.closest('.mood-chip');
+  if(!chip) return;
+  const mood = chip.dataset.mood;
+  if(activeMoods.includes(mood)){
+    if(activeMoods.length===1) return;
+    activeMoods = activeMoods.filter(m=>m!==mood);
+    chip.classList.remove('active');
+  } else {
+    activeMoods.push(mood);
+    chip.classList.add('active');
+  }
+  renderMoodCards();
+});
+
+// ═══ CARD HTML ═══
+function cardHTML(s){
+  return `<div class="place-card">
+    <div class="card-top">
+      <div class="card-name">${s.name}</div>
+      <span class="card-badge ${s.free?'badge-free':'badge-paid'}">${s.free?'Free':'Paid'}</span>
+    </div>
+    <div class="card-area">📍 ${s.area}</div>
+    <div class="card-desc">${s.desc}</div>
+    <div class="card-moods">${s.moods.map(m=>`<span class="card-mood">${m}</span>`).join('')}</div>
+    <div class="card-price">${s.free?'Free entry':'₩'+s.price.toLocaleString()} · Atm ${s.atm}/5</div>
+  </div>`;
+}
+
+// ═══ BUDGET PAGE ═══
+const slider = document.getElementById('budget-slider');
+const budgetDisplay = document.getElementById('budget-display');
+slider.addEventListener('input',()=>{
+  const v = parseInt(slider.value);
+  budgetDisplay.textContent = v===0?'Free only':'₩'+v.toLocaleString();
+  updateSliderFill();
+  renderBudgetCards();
+});
+document.getElementById('budget-mood').addEventListener('change',renderBudgetCards);
+function updateSliderFill(){
+  const pct = (slider.value/slider.max)*100;
+  slider.style.background=`linear-gradient(90deg,var(--accent) ${pct}%,var(--border) ${pct}%)`;
+}
+updateSliderFill();
+function renderBudgetCards(){
+  const max = parseInt(slider.value);
+  const mood = document.getElementById('budget-mood').value;
+  let filtered = SPACES.filter(s=>s.price<=max);
+  if(mood!=='all') filtered = filtered.filter(s=>s.moods.includes(mood));
+  document.getElementById('budget-count').textContent = filtered.length+' spaces within budget';
+  const container = document.getElementById('budget-cards');
+  if(filtered.length===0){container.innerHTML='<div class="no-results">No spaces match — try increasing your budget.</div>';return;}
+  container.innerHTML = filtered.sort((a,b)=>a.price-b.price).map(s=>cardHTML(s)).join('');
+}
+
+// ═══ NEIGHBORHOOD ═══
+let activeNBs = ['Seongsu','Bukchon','Itaewon','Hannam'];
+let radarChart, scatterChart;
+document.getElementById('nb-selector').addEventListener('click',e=>{
+  const btn = e.target.closest('.nb-btn');
+  if(!btn) return;
+  const nb = btn.dataset.nb;
+  if(activeNBs.includes(nb)){
+    if(activeNBs.length===1) return;
+    activeNBs = activeNBs.filter(n=>n!==nb);
+    btn.classList.remove('active');
+  } else {
+    activeNBs.push(nb);
+    btn.classList.add('active');
+  }
+  updateNBCharts();
+  renderNBTable();
+});
+function renderNBTable(){
+  const tbody = document.getElementById('nb-tbody');
+  tbody.innerHTML = activeNBs.map(nb=>{
+    const d = NEIGHBORHOODS[nb];
+    const barW = Math.round(d.atm/5*80);
+    return `<tr>
+      <td><strong style="color:var(--paper)">${nb}</strong></td>
+      <td style="color:var(--dust);font-size:12px">${d.vibe}</td>
+      <td><span class="score-bar" style="width:${barW}px"></span>${d.atm}</td>
+      <td><span class="score-bar" style="width:${Math.round(d.acc/5*80)}px;background:var(--accent)"></span>${d.acc}</td>
+      <td><span class="score-bar" style="width:${Math.round(d.pop/5*80)}px;background:var(--accent3)"></span>${d.pop}</td>
+      <td style="color:var(--accent3);font-family:'DM Mono',monospace;font-size:12px">${d.price===0?'Free':'₩'+d.price.toLocaleString()}</td>
+      <td style="font-size:12px;color:var(--dust)">${d.best}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══ CHART DEFAULTS ═══
+const chartDefaults = {
+  color:'rgba(240,236,228,.6)',
+  plugins:{legend:{labels:{color:'rgba(240,236,228,.6)',font:{family:"'DM Mono', monospace",size:11}}}},
+};
+Chart.defaults.color='rgba(240,236,228,.5)';
+Chart.defaults.font.family="'DM Mono', monospace";
+
+let overviewChartsInited = false;
+function initOverviewCharts(){
+  if(overviewChartsInited) return;
+  overviewChartsInited = true;
+  const nbs = Object.keys(NEIGHBORHOODS);
+  const counts = nbs.map(nb=>SPACES.filter(s=>s.area===nb).length);
+  new Chart(document.getElementById('chart-nb-bar'),{
+    type:'bar',
+    data:{
+      labels:nbs,
+      datasets:[{
+        data:counts,
+        backgroundColor:nbs.map(nb=>NEIGHBORHOODS[nb].color),
+        borderRadius:4,
+      }]
+    },
+    options:{...chartDefaults,plugins:{...chartDefaults.plugins,legend:{display:false}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.05)'}},
+        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{stepSize:2}}
+      }
     }
-    animCursor();
+  });
 
-    document.querySelectorAll('a, button, .skill-item, .project-card').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        cursor.style.width = '18px';
-        cursor.style.height = '18px';
-        ring.style.width = '56px';
-        ring.style.height = '56px';
-      });
-      el.addEventListener('mouseleave', () => {
-        cursor.style.width = '10px';
-        cursor.style.height = '10px';
-        ring.style.width = '36px';
-        ring.style.height = '36px';
-      });
+  const moodCounts = ['Healing','Aesthetic','Quiet','Artistic','Traditional'].map(m=>SPACES.filter(s=>s.moods.includes(m)).length);
+  new Chart(document.getElementById('chart-mood-donut'),{
+    type:'doughnut',
+    data:{
+      labels:['Healing','Aesthetic','Quiet','Artistic','Traditional'],
+      datasets:[{
+        data:moodCounts,
+        backgroundColor:['rgba(126,184,164,.8)','rgba(232,168,124,.8)','rgba(180,180,220,.8)','rgba(212,117,106,.8)','rgba(201,169,110,.8)'],
+        borderWidth:0,
+        hoverOffset:8,
+      }]
+    },
+    options:{...chartDefaults,cutout:'60%'}
+  });
+
+  const buckets = ['Free','₩1–5k','₩5–10k','₩10–20k','₩20k+'];
+  const priceCounts = [
+    SPACES.filter(s=>s.price===0).length,
+    SPACES.filter(s=>s.price>0&&s.price<=5000).length,
+    SPACES.filter(s=>s.price>5000&&s.price<=10000).length,
+    SPACES.filter(s=>s.price>10000&&s.price<=20000).length,
+    SPACES.filter(s=>s.price>20000).length,
+  ];
+  new Chart(document.getElementById('chart-price-bar'),{
+    type:'bar',
+    data:{
+      labels:buckets,
+      datasets:[{
+        label:'Number of Spaces',
+        data:priceCounts,
+        backgroundColor:['rgba(126,184,164,.75)','rgba(201,169,110,.7)','rgba(232,168,124,.7)','rgba(212,117,106,.65)','rgba(180,130,150,.6)'],
+        borderRadius:5,
+      }]
+    },
+    options:{...chartDefaults,
+      plugins:{...chartDefaults.plugins,legend:{display:false}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.05)'}},
+        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{stepSize:2}}
+      }
+    }
+  });
+}
+
+let nbChartsInited = false;
+function initNeighborhoodCharts(){
+  if(!nbChartsInited){
+    nbChartsInited = true;
+    const nbs = activeNBs;
+    radarChart = new Chart(document.getElementById('chart-radar'),{
+      type:'radar',
+      data:{
+        labels:['Atmosphere','Accessibility','Popularity'],
+        datasets: nbs.map(nb=>({
+          label:nb,
+          data:[NEIGHBORHOODS[nb].atm,NEIGHBORHOODS[nb].acc,NEIGHBORHOODS[nb].pop],
+          borderColor:NEIGHBORHOODS[nb].color,
+          backgroundColor:NEIGHBORHOODS[nb].color.replace('.7','.1'),
+          borderWidth:2,pointRadius:4,
+        }))
+      },
+      options:{...chartDefaults,
+        scales:{r:{
+          grid:{color:'rgba(255,255,255,.08)'},
+          angleLines:{color:'rgba(255,255,255,.08)'},
+          pointLabels:{color:'rgba(240,236,228,.6)',font:{size:11}},
+          min:3.5,max:5,ticks:{display:false}
+        }}
+      }
     });
 
-    // Scroll reveal
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.12 });
-    reveals.forEach(el => observer.observe(el));
-  </script>
+    scatterChart = new Chart(document.getElementById('chart-scatter'),{
+      type:'scatter',
+      data:{
+        datasets: nbs.map(nb=>({
+          label:nb,
+          data:[{x:NEIGHBORHOODS[nb].acc,y:NEIGHBORHOODS[nb].pop}],
+          backgroundColor:NEIGHBORHOODS[nb].color,
+          borderColor:NEIGHBORHOODS[nb].color,
+          pointRadius:10,pointHoverRadius:13,
+        }))
+      },
+      options:{...chartDefaults,
+        scales:{
+          x:{title:{display:true,text:'Accessibility',color:'rgba(240,236,228,.5)'},min:3.5,max:5,grid:{color:'rgba(255,255,255,.05)'}},
+          y:{title:{display:true,text:'Popularity',color:'rgba(240,236,228,.5)'},min:3.5,max:5,grid:{color:'rgba(255,255,255,.05)'}},
+        }
+      }
+    });
+  }
+  renderNBTable();
+}
+
+function updateNBCharts(){
+  if(!radarChart||!scatterChart) return;
+  radarChart.data.datasets = activeNBs.map(nb=>({
+    label:nb,
+    data:[NEIGHBORHOODS[nb].atm,NEIGHBORHOODS[nb].acc,NEIGHBORHOODS[nb].pop],
+    borderColor:NEIGHBORHOODS[nb].color,
+    backgroundColor:NEIGHBORHOODS[nb].color.replace('.7','.1'),
+    borderWidth:2,pointRadius:4,
+  }));
+  radarChart.update();
+  scatterChart.data.datasets = activeNBs.map(nb=>({
+    label:nb,
+    data:[{x:NEIGHBORHOODS[nb].acc,y:NEIGHBORHOODS[nb].pop}],
+    backgroundColor:NEIGHBORHOODS[nb].color,
+    borderColor:NEIGHBORHOODS[nb].color,
+    pointRadius:10,pointHoverRadius:13,
+  }));
+  scatterChart.update();
+}
+
+let budgetChartsInited = false;
+function initBudgetCharts(){
+  if(budgetChartsInited) return;
+  budgetChartsInited = true;
+  const thresholds = [0,3000,5000,8000,10000,15000,20000,30000];
+  const counts = thresholds.map(t=>SPACES.filter(s=>s.price<=t).length);
+  new Chart(document.getElementById('chart-budget-line'),{
+    type:'line',
+    data:{
+      labels:thresholds.map(t=>t===0?'Free':'₩'+t.toLocaleString()),
+      datasets:[{
+        label:'Spaces Available',
+        data:counts,
+        borderColor:'rgba(232,168,124,.9)',
+        backgroundColor:'rgba(232,168,124,.08)',
+        fill:true,tension:.4,pointRadius:5,
+        borderWidth:2,
+      }]
+    },
+    options:{...chartDefaults,
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.05)'}},
+        y:{grid:{color:'rgba(255,255,255,.05)'},min:0}
+      }
+    }
+  });
+
+  const tiers = ['Free','Under ₩5k','₩5k–10k','Over ₩10k'];
+  const tierCounts = [
+    SPACES.filter(s=>s.price===0).length,
+    SPACES.filter(s=>s.price>0&&s.price<=5000).length,
+    SPACES.filter(s=>s.price>5000&&s.price<=10000).length,
+    SPACES.filter(s=>s.price>10000).length,
+  ];
+  new Chart(document.getElementById('chart-tier-bar'),{
+    type:'bar',
+    data:{
+      labels:tiers,
+      datasets:[{
+        data:tierCounts,
+        backgroundColor:['rgba(126,184,164,.8)','rgba(201,169,110,.75)','rgba(232,168,124,.75)','rgba(212,117,106,.7)'],
+        borderRadius:5,
+      }]
+    },
+    options:{...chartDefaults,
+      plugins:{...chartDefaults.plugins,legend:{display:false}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.05)'}},
+        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{stepSize:3}}
+      }
+    }
+  });
+}
+
+// ═══ INIT ═══
+initOverviewCharts();
+renderMoodCards();
+</script>
 </body>
 </html>
+ENDOFFILE
