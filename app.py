@@ -1,583 +1,881 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>서울 전시공간 발견 대시보드 ✦</title>
+  <meta name="description" content="기분, 분위기, 예산으로 서울의 전시와 문화공간을 발견하세요"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --cream:#FDF6EE;
+      --peach:#F5C9A0;
+      --rose:#EDAAA0;
+      --sage:#A8C4A2;
+      --butter:#F7E6B0;
+      --lilac:#C9B8D8;
+      --ink:#3D2C1E;
+      --muted:#8B6F5E;
+      --card:#FFFAF4;
+      --border:#EDE0D0;
+      --r:16px;
+    }
+    html{scroll-behavior:smooth;}
+    body{
+      background:var(--cream);
+      color:var(--ink);
+      font-family:'Noto Sans KR',sans-serif;
+      overflow-x:hidden;
+    }
 
-# ── PAGE CONFIG ──
-st.set_page_config(
-    page_title="Seoul Space Discovery",
-    page_icon="🏛️",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+    /* ── ANIMATED BG ── */
+    body::before{
+      content:'';
+      position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 20%, rgba(245,201,160,0.35) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 80%, rgba(201,184,216,0.3) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 50% 50%, rgba(168,196,162,0.15) 0%, transparent 70%);
+      pointer-events:none;z-index:0;
+    }
 
-# ── CUSTOM CSS ──
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap');
+    /* Floating blobs */
+    .blob{
+      position:fixed;border-radius:50%;
+      filter:blur(60px);pointer-events:none;z-index:0;
+      animation:blobFloat 8s ease-in-out infinite;
+    }
+    .blob1{width:300px;height:300px;background:rgba(245,201,160,0.25);top:-80px;left:-80px;animation-delay:0s;}
+    .blob2{width:250px;height:250px;background:rgba(237,170,160,0.2);bottom:10%;right:-60px;animation-delay:3s;}
+    .blob3{width:200px;height:200px;background:rgba(201,184,216,0.2);top:40%;left:-40px;animation-delay:5s;}
+    @keyframes blobFloat{
+      0%,100%{transform:translate(0,0) scale(1);}
+      33%{transform:translate(20px,-20px) scale(1.05);}
+      66%{transform:translate(-10px,15px) scale(0.97);}
+    }
 
-html, body, [class*="css"] {
-    font-family: 'Noto Sans KR', sans-serif;
-}
-.main { background-color: #faf7f2; }
-[data-testid="stSidebar"] {
-    background-color: #f4efe6;
-    border-right: 1px solid #ddd5c8;
-}
-[data-testid="stSidebar"] .block-container { padding-top: 2rem; }
+    /* ── LAYOUT ── */
+    .wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:0 24px;}
 
-/* Metric cards */
-div[data-testid="metric-container"] {
-    background: #ffffff;
-    border: 1px solid #ddd5c8;
-    border-radius: 12px;
-    padding: 16px 20px;
-    box-shadow: 0 2px 12px rgba(80,55,35,.07);
-}
-div[data-testid="metric-container"] label {
-    color: #a8998a !important;
-    font-size: 11px !important;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-}
-div[data-testid="metric-container"] [data-testid="stMetricValue"] {
-    color: #c4714a !important;
-    font-size: 2rem !important;
-}
+    /* ── NAV ── */
+    nav{
+      position:sticky;top:0;z-index:100;
+      background:rgba(253,246,238,0.85);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);
+      padding:0 24px;
+    }
+    .nav-inner{
+      max-width:1060px;margin:0 auto;
+      display:flex;align-items:center;justify-content:space-between;
+      height:60px;
+    }
+    .nav-logo{
+      font-family:'Gowun Batang',serif;
+      font-size:17px;font-weight:700;color:var(--ink);
+      display:flex;align-items:center;gap:8px;
+    }
+    .nav-logo span{font-size:20px;}
+    .nav-tabs{display:flex;gap:4px;}
+    .nav-tab{
+      font-size:13px;color:var(--muted);
+      background:none;border:none;
+      padding:7px 14px;border-radius:20px;
+      cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;
+    }
+    .nav-tab:hover,.nav-tab.active{background:var(--peach);color:var(--ink);font-weight:500;}
 
-/* Place cards */
-.place-card {
-    background: #ffffff;
-    border: 1.5px solid #ddd5c8;
-    border-radius: 14px;
-    padding: 20px 22px;
-    margin-bottom: 14px;
-    box-shadow: 0 2px 12px rgba(80,55,35,.07);
-    transition: border-color .2s;
-}
-.place-card:hover { border-color: #c4714a; }
-.card-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: #2d2620;
-    margin-bottom: 4px;
-}
-.card-area {
-    font-size: 11px;
-    color: #a8998a;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-}
-.card-desc { font-size: 13px; color: #6b5e52; line-height: 1.7; margin-bottom: 10px; }
-.badge {
-    display: inline-block;
-    font-size: 10px;
-    padding: 3px 10px;
-    border-radius: 12px;
-    margin-right: 5px;
-    margin-bottom: 4px;
-}
-.badge-free { background: rgba(122,158,142,.15); color: #7a9e8e; border: 1px solid rgba(122,158,142,.3); }
-.badge-paid { background: rgba(196,113,74,.12); color: #c4714a; border: 1px solid rgba(196,113,74,.25); }
-.badge-mood { background: #f4efe6; color: #a8998a; border: 1px solid #ddd5c8; }
-.card-price { font-size: 11px; color: #b8924a; margin-top: 8px; }
+    /* ── HERO ── */
+    #hero{padding:64px 0 40px;}
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:white;border:1px solid var(--border);
+      border-radius:20px;padding:6px 14px;
+      font-size:12px;color:var(--muted);margin-bottom:20px;
+    }
+    .hero-badge span{font-size:14px;}
+    .hero-title{
+      font-family:'Gowun Batang',serif;
+      font-size:clamp(36px,6vw,64px);
+      font-weight:700;line-height:1.2;
+      color:var(--ink);margin-bottom:16px;
+    }
+    .hero-title em{
+      font-style:normal;
+      background:linear-gradient(135deg,#E8845A,#C76B8A);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-sub{font-size:16px;color:var(--muted);line-height:1.7;max-width:520px;margin-bottom:36px;}
 
-/* Section headers */
-.sec-header {
-    font-size: 22px;
-    font-weight: 400;
-    color: #2d2620;
-    border-left: 3px solid #c4714a;
-    padding-left: 14px;
-    margin-bottom: 6px;
-}
-.sec-sub { font-size: 13px; color: #a8998a; margin-bottom: 20px; padding-left: 17px; }
+    /* Stat pills */
+    .hero-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px;}
+    .stat-pill{
+      background:white;border:1px solid var(--border);
+      border-radius:12px;padding:14px 20px;
+      display:flex;flex-direction:column;gap:2px;
+      min-width:110px;
+    }
+    .stat-num{font-size:22px;font-weight:700;color:var(--ink);}
+    .stat-label{font-size:11px;color:var(--muted);}
 
-/* PRD cards */
-.prd-card {
-    background: #ffffff;
-    border: 1px solid #ddd5c8;
-    border-radius: 14px;
-    padding: 22px 24px;
-    box-shadow: 0 2px 12px rgba(80,55,35,.07);
-    height: 100%;
-}
-.prd-card h4 { color: #c4714a; font-size: 15px; margin-bottom: 10px; }
-.prd-card p, .prd-card li { font-size: 13px; color: #6b5e52; line-height: 1.75; }
-.step-card {
-    background: #ffffff;
-    border: 1px solid #ddd5c8;
-    border-radius: 12px;
-    padding: 18px 20px;
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(80,55,35,.05);
-}
-.step-num {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(196,113,74,.12);
-    border: 1.5px solid rgba(196,113,74,.3);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; color: #c4714a; font-weight: 500;
-    flex-shrink: 0;
-}
-.tech-pill {
-    display: inline-block;
-    background: rgba(122,158,142,.13);
-    color: #7a9e8e;
-    border: 1px solid rgba(122,158,142,.3);
-    border-radius: 4px;
-    font-size: 11px;
-    padding: 4px 12px;
-    margin: 3px 4px 3px 0;
-    letter-spacing: .08em;
-}
-</style>
-""", unsafe_allow_html=True)
+    /* ── SECTION TITLES ── */
+    .sec-eyebrow{
+      font-size:11px;letter-spacing:.15em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:8px;
+    }
+    .sec-title{
+      font-family:'Gowun Batang',serif;
+      font-size:clamp(22px,3.5vw,32px);
+      font-weight:700;color:var(--ink);margin-bottom:8px;
+    }
+    .sec-sub{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:32px;}
 
-# ── DATA ──
-SPACES = [
-    {"name": "Seoul Museum of Art (SeMA)", "area": "Seongsu", "desc": "빛으로 가득한 갤러리에서 만나는 현대미술 — 회전 전시가 끊임없이 새로운 경험을 선사해요.", "moods": ["Artistic", "Aesthetic", "Quiet"], "price": 0, "atm": 4.8, "acc": 4.5, "pop": 4.7},
-    {"name": "Piknic 피크닉", "area": "Seongsu", "desc": "폐공장을 개조한 복합 문화공간 — 카페, 갤러리, 디자인 숍이 따뜻한 감성으로 어우러져 있어요.", "moods": ["Aesthetic", "Healing"], "price": 5000, "atm": 4.6, "acc": 4.2, "pop": 4.5},
-    {"name": "d'strict Artspace", "area": "Seongsu", "desc": "LED 미디어 설치와 모션 반응 환경이 어우러진 몰입형 디지털 아트 공간이에요.", "moods": ["Artistic", "Aesthetic"], "price": 18000, "atm": 4.9, "acc": 4.0, "pop": 4.8},
-    {"name": "대림미술관 Daelim Museum", "area": "Seongsu", "desc": "생활과 사진을 중심으로 한 아늑한 현대미술관 — 개조된 주택 건물이 매력적이에요.", "moods": ["Aesthetic", "Quiet"], "price": 5000, "atm": 4.5, "acc": 4.3, "pop": 4.2},
-    {"name": "북촌한옥마을 Bukchon Hanok", "area": "Bukchon", "desc": "전통 한옥이 보존된 골목을 걷다 보면 살아있는 역사 속을 거니는 느낌이 들어요.", "moods": ["Traditional", "Healing", "Quiet"], "price": 0, "atm": 4.9, "acc": 4.0, "pop": 4.9},
-    {"name": "가회민화박물관", "area": "Bukchon", "desc": "민화와 무속 유물을 소장한 소규모 사립 박물관 — 조용하고 깊이 있는 전통 예술의 세계.", "moods": ["Traditional", "Artistic"], "price": 3000, "atm": 4.4, "acc": 3.8, "pop": 3.6},
-    {"name": "아라리오뮤지엄 인스페이스", "area": "Bukchon", "desc": "드라마틱한 브루탈리즘 내부가 인상적인 국제 현대미술 갤러리예요.", "moods": ["Artistic", "Quiet"], "price": 10000, "atm": 4.7, "acc": 4.2, "pop": 4.1},
-    {"name": "리움미술관 Leeum", "area": "Hannam", "desc": "렘 콜하스, 마리오 보타, 장 누벨이 설계한 건물 자체가 예술인 삼성 사립 미술관.", "moods": ["Artistic", "Aesthetic", "Quiet"], "price": 0, "atm": 4.9, "acc": 4.5, "pop": 4.6},
-    {"name": "Pace Gallery Seoul", "area": "Hannam", "desc": "한남동의 세련된 모더니즘 공간에 자리한 국제 블루칩 현대미술 갤러리.", "moods": ["Artistic", "Aesthetic"], "price": 0, "atm": 4.6, "acc": 4.4, "pop": 4.0},
-    {"name": "국립현대미술관 MMCA", "area": "Yongsan", "desc": "한국 근현대미술의 중심 — 아름답게 복원된 역사적 건물에 자리한 국립 미술관.", "moods": ["Artistic", "Traditional", "Quiet"], "price": 4000, "atm": 4.8, "acc": 4.6, "pop": 4.7},
-    {"name": "경복궁 Gyeongbokgung", "area": "Bukchon", "desc": "서울 최대의 왕궁 — 드넓은 마당과 전통 건축이 절로 발걸음을 느리게 만들어요.", "moods": ["Traditional", "Healing"], "price": 3000, "atm": 4.9, "acc": 4.7, "pop": 4.9},
-    {"name": "별마당 도서관", "area": "Seongsu", "desc": "수천 권의 책이 가득한 천장 높은 아트리움 — 주변 소음이 사라지고 고요함이 찾아와요.", "moods": ["Healing", "Quiet", "Aesthetic"], "price": 0, "atm": 4.7, "acc": 4.6, "pop": 4.8},
-    {"name": "커먼그라운드 Common Ground", "area": "Seongsu", "desc": "컨테이너로 만든 야외 복합공간 — 어반 아트와 감각적인 패션이 함께해요.", "moods": ["Aesthetic", "Artistic"], "price": 0, "atm": 4.3, "acc": 4.4, "pop": 4.5},
-    {"name": "이태원 문화원", "area": "Itaewon", "desc": "순환 전시와 루프탑 테라스가 있는 커뮤니티 아트 허브 — 한적하고 사색적인 공간이에요.", "moods": ["Healing", "Artistic"], "price": 0, "atm": 4.2, "acc": 4.3, "pop": 3.8},
-    {"name": "플래툰 쿤스트할레", "area": "Itaewon", "desc": "28개의 컨테이너로 구성된 엣지 있는 크리에이티브 공간 — 음악, 아트, 문화 이벤트가 열려요.", "moods": ["Artistic", "Aesthetic"], "price": 0, "atm": 4.4, "acc": 4.1, "pop": 4.0},
-    {"name": "이화 벽화마을", "area": "Insadong", "desc": "형형색색 벽화로 가득한 언덕 골목 — 도시의 번잡함을 잊게 해주는 조용한 발견의 공간.", "moods": ["Healing", "Artistic", "Quiet"], "price": 0, "atm": 4.5, "acc": 3.7, "pop": 4.2},
-    {"name": "쌈지길 Ssamziegil", "area": "Insadong", "desc": "독립 숍, 갤러리, 열린 마당이 이어지는 복합 공간 — 인사동 예술 씬의 중심이에요.", "moods": ["Aesthetic", "Artistic"], "price": 0, "atm": 4.3, "acc": 4.5, "pop": 4.6},
-    {"name": "창덕궁 & 후원", "area": "Bukchon", "desc": "유네스코 세계유산 — 숨겨진 비밀 정원(후원)은 한국의 자연과 건축 이상향을 담고 있어요.", "moods": ["Traditional", "Healing", "Quiet"], "price": 8000, "atm": 4.9, "acc": 4.2, "pop": 4.8},
-    {"name": "스페이스K 서울", "area": "Seongsu", "desc": "코오롱이 후원하는 열린 현대미술 공간 — 크고 넉넉한 전시장이 인상적이에요.", "moods": ["Artistic", "Quiet", "Aesthetic"], "price": 0, "atm": 4.6, "acc": 4.1, "pop": 3.9},
-    {"name": "갤러리현대", "area": "Samcheong", "desc": "한국과 국제 작가를 대표하는 서울 최고(最古)의 상업 갤러리 중 하나.", "moods": ["Artistic", "Aesthetic"], "price": 0, "atm": 4.5, "acc": 4.4, "pop": 4.1},
-    {"name": "국제갤러리 Kukje Gallery", "area": "Samcheong", "desc": "아름다운 조경의 복합 건물에 자리한 국제 블루칩 갤러리 — 고요하고 세련된 분위기.", "moods": ["Artistic", "Quiet"], "price": 0, "atm": 4.7, "acc": 4.3, "pop": 4.2},
-    {"name": "더현대 서울 The Hyundai", "area": "Yongsan", "desc": "하늘 정원과 현대미술 설치, 몰입형 팝업 공간이 공존하는 혁신적인 백화점.", "moods": ["Aesthetic", "Healing"], "price": 0, "atm": 4.6, "acc": 4.8, "pop": 4.9},
-    {"name": "서울 밤도깨비 야시장", "area": "Yongsan", "desc": "별빛 아래 먹거리·공예품·라이브 공연이 펼쳐지는 계절 야간 마켓.", "moods": ["Aesthetic", "Healing"], "price": 0, "atm": 4.7, "acc": 4.6, "pop": 4.8},
-    {"name": "트릭아이뮤지엄", "area": "Hongdae", "desc": "방문자가 그림 속 주인공이 되는 트롱프뢰유 아트 뮤지엄 — 신나고 몸으로 즐기는 공간!", "moods": ["Aesthetic", "Artistic"], "price": 15000, "atm": 4.0, "acc": 4.6, "pop": 4.5},
-    {"name": "홍대 아트브릿지 팝업", "area": "Hongdae", "desc": "신진 한국 작가를 소개하는 계절 팝업 갤러리 — 홍대 보행자 거리 따라 만나게 돼요.", "moods": ["Artistic", "Aesthetic"], "price": 0, "atm": 4.1, "acc": 4.7, "pop": 4.3},
-    {"name": "서울사진미술관", "area": "Itaewon", "desc": "다큐멘터리부터 파인 아트까지 — 깊이 있는 사진 아카이브와 순환 전시가 인상적인 공간.", "moods": ["Quiet", "Artistic", "Aesthetic"], "price": 6000, "atm": 4.6, "acc": 4.2, "pop": 3.9},
-    {"name": "한남더힐 갤러리 워크", "area": "Hannam", "desc": "한남 주거 단지 사이를 걸으며 만나는 야외 조각 정원 — 차분하고 감각적이에요.", "moods": ["Healing", "Aesthetic", "Quiet"], "price": 0, "atm": 4.5, "acc": 3.8, "pop": 4.1},
-    {"name": "서울공예박물관", "area": "Bukchon", "desc": "한국 전통 공예의 아름다움을 재발견하는 박물관 — 잘 복원된 근대 건물 안에 자리해요.", "moods": ["Traditional", "Aesthetic", "Quiet"], "price": 0, "atm": 4.6, "acc": 4.3, "pop": 4.0},
-]
+    section.page-section{padding:56px 0;}
 
-NEIGHBORHOODS = {
-    "Seongsu":   {"vibe": "🏭 Industrial Chic",   "atm": 4.5, "acc": 4.3, "pop": 4.6, "avg_price": 3000, "best": "아트+커피 데이트", "color": "#c4714a"},
-    "Bukchon":   {"vibe": "⛩️ Historic Calm",     "atm": 4.8, "acc": 3.9, "pop": 4.5, "avg_price": 2000, "best": "전통 문화 탐방",   "color": "#7a9e8e"},
-    "Itaewon":   {"vibe": "🌍 Cosmopolitan",       "atm": 4.2, "acc": 4.5, "pop": 4.3, "avg_price": 5000, "best": "국제 아트 씬",     "color": "#b8924a"},
-    "Hannam":    {"vibe": "🎨 Refined Luxury",     "atm": 4.6, "acc": 4.3, "pop": 4.4, "avg_price": 0,    "best": "갤러리 호핑",     "color": "#d4856e"},
-    "Hongdae":   {"vibe": "🎸 Youthful Energy",    "atm": 4.0, "acc": 4.7, "pop": 4.8, "avg_price": 3000, "best": "인디·스트리트 아트","color": "#8c78c3"},
-    "Insadong":  {"vibe": "🖼️ Artisan Soul",       "atm": 4.4, "acc": 4.5, "pop": 4.6, "avg_price": 0,    "best": "공예·문화 체험",  "color": "#64a078"},
-    "Samcheong": {"vibe": "🌸 Quiet Elegance",     "atm": 4.7, "acc": 4.2, "pop": 4.2, "avg_price": 0,    "best": "파인 아트 갤러리","color": "#a082c3"},
-    "Yongsan":   {"vibe": "🏛️ Urban Grand",       "atm": 4.5, "acc": 4.7, "pop": 4.6, "avg_price": 2000, "best": "국립 박물관",     "color": "#c39b64"},
-}
+    /* ── MOOD SELECTOR ── */
+    #mood-section{background:transparent;}
+    .mood-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+      gap:12px;margin-bottom:40px;
+    }
+    .mood-btn{
+      border:2px solid var(--border);
+      border-radius:16px;
+      background:white;
+      padding:20px 12px 16px;
+      display:flex;flex-direction:column;align-items:center;gap:8px;
+      cursor:pointer;transition:all .25s;
+      font-family:'Noto Sans KR',sans-serif;
+    }
+    .mood-btn:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(61,44,30,0.08);}
+    .mood-btn.selected{
+      border-color:transparent;
+      box-shadow:0 0 0 2px var(--ink), 0 8px 24px rgba(61,44,30,0.12);
+      transform:translateY(-3px);
+    }
+    .mood-emoji{font-size:32px;line-height:1;}
+    .mood-label{font-size:13px;font-weight:500;color:var(--ink);}
+    .mood-desc{font-size:11px;color:var(--muted);text-align:center;line-height:1.4;}
 
-MOOD_EMOJI = {"Healing": "🌿", "Aesthetic": "🎨", "Quiet": "🕯️", "Artistic": "✨", "Traditional": "⛩️"}
+    /* Mood result cards */
+    .result-header{
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:20px;
+    }
+    .result-title{font-size:15px;font-weight:500;color:var(--ink);}
+    .result-count{font-size:13px;color:var(--muted);}
+    .cards-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+      gap:16px;
+    }
+    .space-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--r);
+      overflow:hidden;
+      transition:all .25s;
+      cursor:pointer;
+    }
+    .space-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(61,44,30,0.1);}
+    .card-thumb{
+      height:140px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:48px;
+      position:relative;overflow:hidden;
+    }
+    .card-body{padding:16px;}
+    .card-district{
+      font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:4px;
+    }
+    .card-name{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+    .card-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;}
+    .card-price{
+      font-size:12px;font-weight:500;
+      background:var(--butter);color:#7A6020;
+      padding:3px 10px;border-radius:8px;
+    }
+    .card-tags{display:flex;gap:5px;flex-wrap:wrap;}
+    .card-tag{
+      font-size:10px;
+      background:rgba(168,196,162,0.25);color:#3A6B35;
+      padding:3px 8px;border-radius:6px;
+    }
 
-df = pd.DataFrame(SPACES)
-df["free"] = df["price"] == 0
-df["moods_str"] = df["moods"].apply(lambda x: ", ".join(x))
+    /* ── NEIGHBORHOOD COMPARISON ── */
+    #compare-section{}
+    .compare-controls{
+      display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;
+    }
+    .compare-btn{
+      border:1.5px solid var(--border);border-radius:20px;
+      background:white;padding:8px 18px;
+      font-size:13px;color:var(--muted);
+      cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;
+    }
+    .compare-btn:hover{border-color:var(--rose);color:var(--ink);}
+    .compare-btn.active{
+      background:var(--rose);border-color:var(--rose);
+      color:white;font-weight:500;
+    }
+    .charts-row{
+      display:grid;grid-template-columns:1fr 1fr;gap:20px;
+      margin-bottom:20px;
+    }
+    .chart-card{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r);padding:24px;
+    }
+    .chart-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:16px;}
+    .chart-wrap{position:relative;height:220px;}
 
-# ── SIDEBAR ──
-with st.sidebar:
-    st.markdown("### 🏛️ Seoul Space\n**Discovery Dashboard**")
-    st.caption("Arts & Big Data · SKKU · Hyojung Park")
-    st.markdown("---")
-    page = st.radio(
-        "페이지 선택",
-        ["🗺️ Overview", "🌸 Mood Finder", "🏘️ Neighborhoods", "💰 Budget Filter", "📋 Project Info"],
-        label_visibility="collapsed",
-    )
-    st.markdown("---")
-    st.markdown(
-        "<div style='font-size:12px;color:#a8998a;line-height:1.8'>"
-        "👩‍🎓 Hyojung Park<br>💃 Dance Major<br>📚 Arts & Big Data<br>🏫 SKKU"
-        "</div>",
-        unsafe_allow_html=True,
-    )
+    /* Radar full width */
+    .chart-card.full{grid-column:span 2;}
+    .chart-wrap.tall{height:280px;}
 
-# helper: render a place card
-def render_card(s):
-    free_badge = '<span class="badge badge-free">🎟️ 무료</span>' if s["free"] else '<span class="badge badge-paid">💳 유료</span>'
-    mood_badges = "".join(f'<span class="badge badge-mood">{MOOD_EMOJI.get(m,"")} {m}</span>' for m in s["moods"])
-    price_txt = "🎟️ 무료 입장" if s["free"] else f"💳 ₩{s['price']:,}"
-    st.markdown(f"""
-    <div class="place-card">
-        <div class="card-title">{s['name']} {free_badge}</div>
-        <div class="card-area">📍 {s['area']}</div>
-        <div class="card-desc">{s['desc']}</div>
-        <div>{mood_badges}</div>
-        <div class="card-price">{price_txt} &nbsp;·&nbsp; ⭐ 분위기 {s['atm']}/5</div>
+    /* Neighborhood stat table */
+    .nbhd-table{width:100%;border-collapse:collapse;font-size:13px;}
+    .nbhd-table th{
+      text-align:left;padding:10px 14px;
+      background:rgba(245,201,160,0.2);
+      color:var(--muted);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    }
+    .nbhd-table td{padding:12px 14px;border-bottom:1px solid var(--border);}
+    .nbhd-table tr:last-child td{border-bottom:none;}
+    .nbhd-pill{
+      display:inline-block;font-size:11px;font-weight:500;
+      padding:3px 10px;border-radius:8px;
+    }
+
+    /* ── BUDGET FILTER ── */
+    #budget-section{}
+    .budget-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;}
+    .budget-btn{
+      border:1.5px solid var(--border);border-radius:12px;
+      background:white;padding:10px 20px;
+      font-size:13px;cursor:pointer;transition:all .2s;
+      font-family:'Noto Sans KR',sans-serif;color:var(--ink);
+      display:flex;flex-direction:column;gap:2px;align-items:center;
+    }
+    .budget-btn:hover{border-color:var(--lilac);}
+    .budget-btn.active{background:var(--lilac);border-color:var(--lilac);color:var(--ink);}
+    .budget-range{font-size:11px;color:var(--muted);}
+    .budget-btn.active .budget-range{color:rgba(61,44,30,0.6);}
+    .budget-cards{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;
+    }
+
+    /* ── DATA VIZ SECTION ── */
+    #dataviz-section{}
+    .viz-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .viz-card{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r);padding:24px;
+    }
+    .viz-card.full{grid-column:span 2;}
+    .viz-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+    .viz-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
+    .viz-wrap{position:relative;height:200px;}
+    .viz-wrap.tall{height:260px;}
+
+    /* ── MAP SECTION ── */
+    #map-section{}
+    .map-outer{
+      display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;
+    }
+    .map-svg-wrap{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r);overflow:hidden;
+      aspect-ratio:1/1;max-height:480px;
+    }
+    .map-list{display:flex;flex-direction:column;gap:10px;}
+    .map-item{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:12px;padding:14px 16px;
+      cursor:pointer;transition:all .2s;
+    }
+    .map-item:hover,.map-item.active{
+      border-color:var(--rose);
+      background:rgba(237,170,160,0.08);
+    }
+    .map-item-top{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+    .map-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .map-item-name{font-size:14px;font-weight:500;color:var(--ink);}
+    .map-item-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+    .map-item-tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+
+    /* ── FOOTER ── */
+    footer{
+      border-top:1px solid var(--border);
+      padding:32px 24px;margin-top:40px;
+      text-align:center;
+    }
+    .footer-inner{max-width:1060px;margin:0 auto;}
+    .footer-title{font-family:'Gowun Batang',serif;font-size:18px;font-weight:700;margin-bottom:6px;}
+    .footer-sub{font-size:13px;color:var(--muted);}
+
+    /* ── REVEAL ── */
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:700px){
+      .charts-row,.viz-grid{grid-template-columns:1fr;}
+      .chart-card.full,.viz-card.full{grid-column:span 1;}
+      .map-outer{grid-template-columns:1fr;}
+      .nav-tabs{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Blobs -->
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo"><span>🗺️</span> 서울 공간 발견</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="scrollTo('#mood-section',this)">기분 추천</button>
+      <button class="nav-tab" onclick="scrollTo('#compare-section',this)">동네 비교</button>
+      <button class="nav-tab" onclick="scrollTo('#budget-section',this)">예산별</button>
+      <button class="nav-tab" onclick="scrollTo('#dataviz-section',this)">데이터 시각화</button>
+      <button class="nav-tab" onclick="scrollTo('#map-section',this)">지도</button>
     </div>
-    """, unsafe_allow_html=True)
+  </div>
+</nav>
 
-# ════════════════════════════════
-# PAGE: OVERVIEW
-# ════════════════════════════════
-if page == "🗺️ Overview":
-    st.markdown('<div class="sec-header">🗺️ Overview</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sec-sub">서울 문화공간 전체 현황을 한눈에 살펴보세요</div>', unsafe_allow_html=True)
-
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("🏛️ Cultural Spaces", len(df))
-    c2.metric("📍 Neighborhoods", df["area"].nunique())
-    c3.metric("🎟️ Free Entry", f"{int(df['free'].mean()*100)}%")
-    c4.metric("⭐ Avg Atmosphere", f"{df['atm'].mean():.1f}")
-
-    st.markdown("---")
-
-    col_l, col_r = st.columns(2)
-
-    with col_l:
-        st.markdown("#### 📊 동네별 공간 수")
-        nb_counts = df.groupby("area").size().reset_index(name="count")
-        colors = [NEIGHBORHOODS.get(a, {}).get("color", "#c4714a") for a in nb_counts["area"]]
-        fig_bar = px.bar(
-            nb_counts, x="area", y="count",
-            color="area",
-            color_discrete_map={a: NEIGHBORHOODS.get(a, {}).get("color", "#c4714a") for a in nb_counts["area"]},
-            labels={"area": "동네", "count": "공간 수"},
-        )
-        fig_bar.update_layout(
-            plot_bgcolor="#faf7f2", paper_bgcolor="#ffffff",
-            font_color="#6b5e52", showlegend=False,
-            margin=dict(t=10, b=10), height=280,
-        )
-        fig_bar.update_traces(marker_line_width=0)
-        st.plotly_chart(fig_bar, use_container_width=True)
-
-    with col_r:
-        st.markdown("#### 🌈 무드 분포")
-        all_moods = [m for ms in df["moods"] for m in ms]
-        mood_counts = pd.Series(all_moods).value_counts().reset_index()
-        mood_counts.columns = ["mood", "count"]
-        mood_counts["label"] = mood_counts["mood"].apply(lambda m: f"{MOOD_EMOJI.get(m,'')} {m}")
-        fig_pie = px.pie(
-            mood_counts, names="label", values="count",
-            color_discrete_sequence=["#7a9e8e", "#c4714a", "#b8a0d0", "#d4856e", "#b8924a"],
-            hole=0.5,
-        )
-        fig_pie.update_layout(
-            plot_bgcolor="#faf7f2", paper_bgcolor="#ffffff",
-            font_color="#6b5e52", margin=dict(t=10, b=10), height=280,
-        )
-        st.plotly_chart(fig_pie, use_container_width=True)
-
-    st.markdown("#### 💳 입장료 분포")
-    bins = ["무료", "₩1–5k", "₩5–10k", "₩10–20k", "₩20k+"]
-    bin_counts = [
-        len(df[df["price"] == 0]),
-        len(df[(df["price"] > 0) & (df["price"] <= 5000)]),
-        len(df[(df["price"] > 5000) & (df["price"] <= 10000)]),
-        len(df[(df["price"] > 10000) & (df["price"] <= 20000)]),
-        len(df[df["price"] > 20000]),
-    ]
-    fig_price = px.bar(
-        x=bins, y=bin_counts,
-        color=bins,
-        color_discrete_sequence=["#7a9e8e", "#b8924a", "#c4714a", "#d4856e", "#b8a0c8"],
-        labels={"x": "가격대", "y": "공간 수"},
-    )
-    fig_price.update_layout(
-        plot_bgcolor="#faf7f2", paper_bgcolor="#ffffff",
-        font_color="#6b5e52", showlegend=False,
-        margin=dict(t=10, b=10), height=260,
-    )
-    fig_price.update_traces(marker_line_width=0)
-    st.plotly_chart(fig_price, use_container_width=True)
-
-
-# ════════════════════════════════
-# PAGE: MOOD FINDER
-# ════════════════════════════════
-elif page == "🌸 Mood Finder":
-    st.markdown('<div class="sec-header">🌸 Mood Finder</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sec-sub">오늘의 기분에 맞는 서울 문화공간을 찾아보세요 ✨</div>', unsafe_allow_html=True)
-
-    st.info("💡 공간의 분위기가 몸의 움직임을 먼저 만들어냅니다 — Dance & Space 연구에서 영감을 받았어요.", icon="💃")
-
-    mood_options = ["🌿 Healing", "🎨 Aesthetic", "🕯️ Quiet", "✨ Artistic", "⛩️ Traditional"]
-    selected = st.multiselect(
-        "무드를 선택하세요 (복수 선택 가능)",
-        mood_options,
-        default=["🌿 Healing"],
-    )
-
-    selected_keys = [s.split(" ", 1)[1] for s in selected]
-
-    filtered = [s for s in SPACES if any(m in s["moods"] for m in selected_keys)]
-
-    if not filtered:
-        st.warning("해당 무드의 공간이 없어요 😢 다른 무드를 선택해보세요!")
-    else:
-        st.success(f"✅ **{len(filtered)}개** 공간을 찾았어요!")
-        col1, col2 = st.columns(2)
-        for i, s in enumerate(filtered):
-            with (col1 if i % 2 == 0 else col2):
-                render_card(s)
-
-
-# ════════════════════════════════
-# PAGE: NEIGHBORHOODS
-# ════════════════════════════════
-elif page == "🏘️ Neighborhoods":
-    st.markdown('<div class="sec-header">🏘️ Neighborhood 비교</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sec-sub">분위기, 접근성, 인기도를 기준으로 서울의 문화 동네를 비교해보세요 🗺️</div>', unsafe_allow_html=True)
-
-    all_nbs = list(NEIGHBORHOODS.keys())
-    selected_nbs = st.multiselect(
-        "비교할 동네를 선택하세요",
-        all_nbs,
-        default=["Seongsu", "Bukchon", "Itaewon", "Hannam"],
-    )
-
-    if len(selected_nbs) < 2:
-        st.warning("동네를 2개 이상 선택해주세요!")
-    else:
-        col_l, col_r = st.columns(2)
-
-        with col_l:
-            st.markdown("#### 🕸️ Atmosphere · Accessibility · Popularity")
-            categories = ["Atmosphere", "Accessibility", "Popularity"]
-            fig_radar = go.Figure()
-            for nb in selected_nbs:
-                d = NEIGHBORHOODS[nb]
-                fig_radar.add_trace(go.Scatterpolar(
-                    r=[d["atm"], d["acc"], d["pop"]],
-                    theta=categories,
-                    fill="toself",
-                    name=nb,
-                    line_color=d["color"],
-                    fillcolor=d["color"].replace(")", ", 0.08)").replace("rgb", "rgba") if "rgb" in d["color"] else d["color"] + "15",
-                ))
-            fig_radar.update_layout(
-                polar=dict(
-                    radialaxis=dict(visible=True, range=[3.5, 5], tickfont_color="#a8998a"),
-                    angularaxis=dict(tickfont_color="#6b5e52"),
-                    bgcolor="#faf7f2",
-                ),
-                paper_bgcolor="#ffffff", font_color="#6b5e52",
-                legend=dict(font_color="#6b5e52"),
-                margin=dict(t=20, b=20), height=340,
-            )
-            st.plotly_chart(fig_radar, use_container_width=True)
-
-        with col_r:
-            st.markdown("#### 📈 Popularity vs Accessibility")
-            scatter_data = [{"name": nb, "acc": NEIGHBORHOODS[nb]["acc"], "pop": NEIGHBORHOODS[nb]["pop"], "color": NEIGHBORHOODS[nb]["color"]} for nb in selected_nbs]
-            fig_scatter = go.Figure()
-            for d in scatter_data:
-                fig_scatter.add_trace(go.Scatter(
-                    x=[d["acc"]], y=[d["pop"]],
-                    mode="markers+text",
-                    name=d["name"],
-                    text=[d["name"]],
-                    textposition="top center",
-                    marker=dict(size=18, color=d["color"], line=dict(width=2, color="#ffffff")),
-                ))
-            fig_scatter.update_layout(
-                xaxis=dict(title="Accessibility", range=[3.4, 5.1], gridcolor="#ede6d9"),
-                yaxis=dict(title="Popularity",    range=[3.4, 5.1], gridcolor="#ede6d9"),
-                plot_bgcolor="#faf7f2", paper_bgcolor="#ffffff",
-                font_color="#6b5e52", showlegend=False,
-                margin=dict(t=20, b=20), height=340,
-            )
-            st.plotly_chart(fig_scatter, use_container_width=True)
-
-        st.markdown("#### 📋 상세 데이터")
-        table_rows = []
-        for nb in selected_nbs:
-            d = NEIGHBORHOODS[nb]
-            table_rows.append({
-                "동네": nb,
-                "분위기": d["vibe"],
-                "Atmosphere ⭐": d["atm"],
-                "Accessibility 🚇": d["acc"],
-                "Popularity 🔥": d["pop"],
-                "평균 입장료": "무료" if d["avg_price"] == 0 else f"₩{d['avg_price']:,}",
-                "추천 목적": d["best"],
-            })
-        st.dataframe(pd.DataFrame(table_rows), use_container_width=True, hide_index=True)
-
-        st.markdown("#### 🗂️ 선택된 동네의 공간")
-        nb_filtered = [s for s in SPACES if s["area"] in selected_nbs]
-        col1, col2 = st.columns(2)
-        for i, s in enumerate(nb_filtered):
-            with (col1 if i % 2 == 0 else col2):
-                render_card(s)
-
-
-# ════════════════════════════════
-# PAGE: BUDGET FILTER
-# ════════════════════════════════
-elif page == "💰 Budget Filter":
-    st.markdown('<div class="sec-header">💰 Budget Filter</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sec-sub">예산에 맞는 서울 문화공간을 찾아보세요 💳</div>', unsafe_allow_html=True)
-
-    col_sl, col_mood = st.columns([2, 1])
-    with col_sl:
-        budget = st.slider("최대 예산 (₩)", 0, 30000, 15000, step=1000,
-                           format="₩%d")
-    with col_mood:
-        mood_filter = st.selectbox(
-            "무드 필터",
-            ["모든 무드"] + [f"{MOOD_EMOJI[m]} {m}" for m in MOOD_EMOJI],
-        )
-
-    mood_key = None if mood_filter == "모든 무드" else mood_filter.split(" ", 1)[1]
-    filtered = [s for s in SPACES if s["price"] <= budget]
-    if mood_key:
-        filtered = [s for s in filtered if mood_key in s["moods"]]
-
-    col_l, col_r = st.columns(2)
-
-    with col_l:
-        st.markdown("#### 📈 예산별 이용 가능 공간")
-        thresholds = [0, 3000, 5000, 8000, 10000, 15000, 20000, 30000]
-        counts_by_budget = [len([s for s in SPACES if s["price"] <= t]) for t in thresholds]
-        fig_line = px.line(
-            x=[t if t > 0 else "Free" for t in thresholds],
-            y=counts_by_budget,
-            markers=True,
-            labels={"x": "예산", "y": "공간 수"},
-            color_discrete_sequence=["#c4714a"],
-        )
-        fig_line.update_traces(line_width=2.5, marker_size=8)
-        fig_line.update_layout(
-            plot_bgcolor="#faf7f2", paper_bgcolor="#ffffff",
-            font_color="#6b5e52", margin=dict(t=10, b=10), height=260,
-        )
-        st.plotly_chart(fig_line, use_container_width=True)
-
-    with col_r:
-        st.markdown("#### 💳 가격대별 공간 수")
-        tier_labels = ["🎟️ Free", "~₩5k", "₩5–10k", "₩10k+"]
-        tier_counts = [
-            len(df[df["price"] == 0]),
-            len(df[(df["price"] > 0) & (df["price"] <= 5000)]),
-            len(df[(df["price"] > 5000) & (df["price"] <= 10000)]),
-            len(df[df["price"] > 10000]),
-        ]
-        fig_tier = px.bar(
-            x=tier_labels, y=tier_counts,
-            color=tier_labels,
-            color_discrete_sequence=["#7a9e8e", "#b8924a", "#c4714a", "#d4856e"],
-            labels={"x": "가격대", "y": "공간 수"},
-        )
-        fig_tier.update_layout(
-            plot_bgcolor="#faf7f2", paper_bgcolor="#ffffff",
-            font_color="#6b5e52", showlegend=False,
-            margin=dict(t=10, b=10), height=260,
-        )
-        fig_tier.update_traces(marker_line_width=0)
-        st.plotly_chart(fig_tier, use_container_width=True)
-
-    budget_label = "무료 공간만" if budget == 0 else f"₩{budget:,} 이하"
-    st.success(f"✅ **{budget_label}** 기준 — **{len(filtered)}개** 공간을 이용할 수 있어요!")
-    filtered_sorted = sorted(filtered, key=lambda s: s["price"])
-    col1, col2 = st.columns(2)
-    for i, s in enumerate(filtered_sorted):
-        with (col1 if i % 2 == 0 else col2):
-            render_card(s)
-
-
-# ════════════════════════════════
-# PAGE: PROJECT INFO (PRD)
-# ════════════════════════════════
-elif page == "📋 Project Info":
-    st.markdown('<div class="sec-header">📋 Project Info (PRD)</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sec-sub">Seoul Exhibition & Space Discovery Dashboard — 프로젝트 소개</div>', unsafe_allow_html=True)
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("""
-        <div class="prd-card">
-            <h4>❓ Why — 프로젝트 목적</h4>
-            <p>인기 순위가 아닌 무드·분위기·예산에 맞는 서울의 전시·문화 공간을 찾을 수 있도록 돕기 위한 프로젝트예요. 전시 데이트 코스를 고민하는 사람들에게 데이터 시각화를 통한 개인화된 추천을 제공합니다.</p>
-        </div>
-        """, unsafe_allow_html=True)
-    with c2:
-        st.markdown("""
-        <div class="prd-card">
-            <h4>👥 Who — 대상 사용자</h4>
-            <ul>
-                <li>🧑‍🎨 20대 청년 및 전시 애호가</li>
-                <li>💑 데이트 코스를 찾는 커플</li>
-                <li>🌸 감각적인 공간에 관심 있는 사람</li>
-                <li>🗺️ 서울 문화·예술 씬이 궁금한 누구나</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    c3, c4 = st.columns(2)
-    with c3:
-        st.markdown("""
-        <div class="prd-card">
-            <h4>🛠️ What — 핵심 기능</h4>
-            <ul>
-                <li>🌿 무드 기반 추천 시스템</li>
-                <li>🏘️ 동네 비교 툴 (성수, 북촌, 이태원, 한남…)</li>
-                <li>💰 예산 기반 추천</li>
-                <li>📊 인터랙티브 데이터 시각화</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-    with c4:
-        st.markdown("""
-        <div class="prd-card">
-            <h4>⚙️ How — 기술 스택</h4>
-            <p>
-                <span class="tech-pill">Python 3.9+</span>
-                <span class="tech-pill">Streamlit</span>
-                <span class="tech-pill">Pandas</span>
-                <span class="tech-pill">Plotly</span>
-                <span class="tech-pill">GitHub</span>
-                <span class="tech-pill">Streamlit Cloud</span>
-            </p>
-            <p style="margin-top:12px">Python과 Streamlit 라이브러리를 활용하고, 전시 장소·문화 공간·예산 정보를 담은 큐레이션 데이터셋을 사용합니다.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("#### 🗓️ 3-Step Build Plan")
-    st.markdown("""
-    <div class="step-card">
-        <div class="step-num">1</div>
-        <div>
-            <strong>🏗️ Basic UI Layout & Sample Dataset Setup</strong><br>
-            <span style="font-size:13px;color:#6b5e52">GitHub 저장소 생성 및 Streamlit 환경 설정. 서울 전시·문화공간 샘플 데이터셋 준비. 홈화면 및 네비게이션 레이아웃 디자인.</span>
-        </div>
+<!-- Hero -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-badge"><span>✨</span> Arts & Big Data · 성균관대학교 무용학과</div>
+    <h1 class="hero-title">
+      서울의 공간을<br><em>기분으로</em> 찾다
+    </h1>
+    <p class="hero-sub">인기 순위가 아닌, 지금 내 기분과 분위기, 예산에 맞는 전시와 문화공간을 발견하세요.</p>
+    <div class="hero-stats">
+      <div class="stat-pill"><span class="stat-num">47</span><span class="stat-label">큐레이션된 공간</span></div>
+      <div class="stat-pill"><span class="stat-num">12</span><span class="stat-label">서울 주요 동네</span></div>
+      <div class="stat-pill"><span class="stat-num">5</span><span class="stat-label">기분 카테고리</span></div>
+      <div class="stat-pill"><span class="stat-num">Free~₩30K</span><span class="stat-label">예산 범위</span></div>
     </div>
-    <div class="step-card">
-        <div class="step-num">2</div>
-        <div>
-            <strong>🔮 Interactive Recommendation & Visualization</strong><br>
-            <span style="font-size:13px;color:#6b5e52">무드 기반 필터 구현. 예산 및 동네 비교 기능 추가. Plotly를 활용한 차트 시각화 적용.</span>
-        </div>
-    </div>
-    <div class="step-card">
-        <div class="step-num">3</div>
-        <div>
-            <strong>✨ UI Improvement & Real Data Integration</strong><br>
-            <span style="font-size:13px;color:#6b5e52">깔끔하고 모던한 디자인 테마 적용. 실제 전시·문화공간 데이터 추가. 반응형 개선 및 배포 완료.</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+  </div>
+</section>
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("""
-    <div class="prd-card">
-        <h4>💃 Academic & Creative Value</h4>
-        <p>무용 전공자로서 공간·분위기·감정 경험의 관계에 대한 관심이 담긴 프로젝트입니다. 전시 및 문화공간 데이터를 인터랙티브 추천 시스템으로 구성함으로써, 주관적 감각을 데이터 기반 문화 경험으로 전환하는 새로운 방식으로 서울의 예술·전시 씬을 탐색할 수 있도록 합니다. 🌿</p>
+<!-- ── MOOD SECTION ── -->
+<section class="page-section" id="mood-section">
+  <div class="wrap reveal">
+    <div class="sec-eyebrow">Step 1 · 기분 선택</div>
+    <h2 class="sec-title">오늘 기분이 어때요? 🌸</h2>
+    <p class="sec-sub">키워드를 선택하면 딱 맞는 공간을 추천해드려요.</p>
+    <div class="mood-grid" id="mood-grid"></div>
+    <div id="mood-results"></div>
+  </div>
+</section>
+
+<!-- ── COMPARE SECTION ── -->
+<section class="page-section" id="compare-section">
+  <div class="wrap reveal">
+    <div class="sec-eyebrow">Step 2 · 동네 비교</div>
+    <h2 class="sec-title">어느 동네로 갈까요? 🏘️</h2>
+    <p class="sec-sub">분위기, 접근성, 인기도를 한눈에 비교해보세요.</p>
+    <div class="compare-controls" id="compare-controls"></div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">🌟 동네별 인기도</div>
+        <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">💰 평균 입장료</div>
+        <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+      </div>
+      <div class="chart-card full">
+        <div class="chart-title">🕸️ 동네 특성 레이더</div>
+        <div class="chart-wrap tall"><canvas id="radarChart"></canvas></div>
+      </div>
     </div>
-    """, unsafe_allow_html=True)
+    <div class="chart-card" style="margin-top:0;">
+      <table class="nbhd-table" id="nbhd-table"></table>
+    </div>
+  </div>
+</section>
+
+<!-- ── BUDGET SECTION ── -->
+<section class="page-section" id="budget-section">
+  <div class="wrap reveal">
+    <div class="sec-eyebrow">Step 3 · 예산 설정</div>
+    <h2 class="sec-title">예산이 얼마예요? 💸</h2>
+    <p class="sec-sub">부담 없이 즐길 수 있는 공간들을 골라드려요.</p>
+    <div class="budget-row" id="budget-row"></div>
+    <div class="budget-cards" id="budget-cards"></div>
+  </div>
+</section>
+
+<!-- ── DATA VIZ SECTION ── -->
+<section class="page-section" id="dataviz-section">
+  <div class="wrap reveal">
+    <div class="sec-eyebrow">데이터 시각화</div>
+    <h2 class="sec-title">서울 문화공간 트렌드 📊</h2>
+    <p class="sec-sub">데이터로 읽는 서울의 전시 문화 흐름.</p>
+    <div class="viz-grid">
+      <div class="viz-card">
+        <div class="viz-title">월별 전시 오픈 수</div>
+        <div class="viz-sub">2024년 기준</div>
+        <div class="viz-wrap"><canvas id="monthChart"></canvas></div>
+      </div>
+      <div class="viz-card">
+        <div class="viz-title">공간 유형 분포</div>
+        <div class="viz-sub">전체 47개 공간</div>
+        <div class="viz-wrap"><canvas id="typeChart"></canvas></div>
+      </div>
+      <div class="viz-card full">
+        <div class="viz-title">기분 키워드별 공간 수</div>
+        <div class="viz-sub">각 기분에 해당하는 추천 공간 분포</div>
+        <div class="viz-wrap tall"><canvas id="moodBarChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MAP SECTION ── -->
+<section class="page-section" id="map-section">
+  <div class="wrap reveal">
+    <div class="sec-eyebrow">인터랙티브 지도</div>
+    <h2 class="sec-title">서울 문화 공간 지도 🗺️</h2>
+    <p class="sec-sub">동네를 클릭하면 해당 지역의 공간 정보를 볼 수 있어요.</p>
+    <div class="map-outer">
+      <div class="map-svg-wrap">
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+          <rect width="500" height="500" fill="#FDF6EE"/>
+          <!-- Han River -->
+          <path d="M0 310 Q80 295 160 300 Q240 305 320 290 Q400 275 500 285" stroke="rgba(123,190,210,0.6)" stroke-width="22" fill="none" stroke-linecap="round"/>
+          <path d="M0 312 Q80 297 160 302 Q240 307 320 292 Q400 277 500 287" stroke="rgba(170,215,230,0.3)" stroke-width="32" fill="none" stroke-linecap="round"/>
+          <text x="380" y="280" font-family="Noto Sans KR" font-size="10" fill="rgba(80,140,170,0.8)">한강</text>
+          <!-- City boundary soft -->
+          <ellipse cx="250" cy="240" rx="180" ry="150" fill="rgba(245,201,160,0.08)" stroke="rgba(245,201,160,0.25)" stroke-width="1"/>
+          <!-- Map markers -->
+          <g id="map-markers"></g>
+          <text x="20" y="490" font-family="Noto Sans KR" font-size="9" fill="rgba(139,111,94,0.5)">서울특별시 · Seoul</text>
+        </svg>
+      </div>
+      <div class="map-list" id="map-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-title">🗺️ 서울 전시공간 발견 대시보드</div>
+    <div class="footer-sub">Arts & Big Data · Hyojung Park · 성균관대학교 무용학과<br>공간, 분위기, 그리고 데이터로 만나는 서울의 문화</div>
+  </div>
+</footer>
+
+<script>
+// ── DATA ──
+const MOODS = [
+  {id:'healing',emoji:'🌿',label:'힐링',desc:'지치고 쉬고 싶을 때',color:'#A8C4A2',bg:'rgba(168,196,162,0.12)'},
+  {id:'aesthetic',emoji:'🎨',label:'감성',desc:'사진 찍기 좋은 공간',color:'#EDAAA0',bg:'rgba(237,170,160,0.12)'},
+  {id:'quiet',emoji:'🌙',label:'고요',desc:'조용히 생각하고 싶을 때',color:'#C9B8D8',bg:'rgba(201,184,216,0.12)'},
+  {id:'artistic',emoji:'✦',label:'예술적',desc:'깊이 있는 예술 경험',color:'#F5C9A0',bg:'rgba(245,201,160,0.15)'},
+  {id:'traditional',emoji:'🏯',label:'전통',desc:'한국의 역사와 문화',color:'#D4A97A',bg:'rgba(212,169,122,0.12)'},
+  {id:'trendy',emoji:'🔥',label:'트렌디',desc:'지금 가장 핫한 곳',color:'#F08080',bg:'rgba(240,128,128,0.1)'},
+];
+
+const SPACES = [
+  {name:'국립현대미술관 서울',district:'삼청',mood:['artistic','quiet'],price:0,priceLabel:'무료',thumb:'🖼️',thumbBg:'linear-gradient(135deg,#E8D5C4,#C9B8D8)',desc:'한국 현대미술의 총본산. 넓고 고요한 전시 공간.',tags:['현대미술','무료','넓은 공간']},
+  {name:'DDP 동대문디자인플라자',district:'동대문',mood:['aesthetic','trendy'],price:5000,priceLabel:'₩5,000~',thumb:'🏛️',thumbBg:'linear-gradient(135deg,#C9B8D8,#BDDDE4)',desc:'자하 하디드의 유려한 곡선. 전시마다 분위기가 다름.',tags:['디자인','건축','인스타감성']},
+  {name:'성수 S팩토리',district:'성수',mood:['aesthetic','trendy'],price:15000,priceLabel:'₩15,000',thumb:'🏭',thumbBg:'linear-gradient(135deg,#F5C9A0,#EDAAA0)',desc:'쇼룸과 팝업의 중심. 매달 새로운 브랜드 경험.',tags:['팝업','트렌디','브랜드']},
+  {name:'경복궁',district:'종로',mood:['traditional','quiet','healing'],price:3000,priceLabel:'₩3,000',thumb:'🏯',thumbBg:'linear-gradient(135deg,#D4A97A,#C9A87C)',desc:'조선의 정궁. 계절마다 다른 아름다움을 품은 곳.',tags:['역사','전통','산책']},
+  {name:'북촌 한옥마을',district:'북촌',mood:['traditional','healing','aesthetic'],price:0,priceLabel:'무료',thumb:'🏘️',thumbBg:'linear-gradient(135deg,#D4A97A,#A8C4A2)',desc:'고즈넉한 한옥 골목. 시간이 느려지는 공간.',tags:['한옥','전통','산책']},
+  {name:'아모레퍼시픽 미술관',district:'한남',mood:['artistic','aesthetic'],price:0,priceLabel:'무료',thumb:'🎭',thumbBg:'linear-gradient(135deg,#EDAAA0,#F5C9A0)',desc:'기업 미술관 중 최고 수준. 기획 전시 퀄리티가 높음.',tags:['현대미술','기업미술관','무료']},
+  {name:'이태원 부티크 갤러리',district:'이태원',mood:['artistic','trendy'],price:10000,priceLabel:'₩10,000',thumb:'🎨',thumbBg:'linear-gradient(135deg,#C9B8D8,#EDAAA0)',desc:'국제적인 분위기의 소규모 갤러리 거리.',tags:['갤러리','국제적','아트']},
+  {name:'한강 노을공원',district:'마포',mood:['healing','quiet'],price:0,priceLabel:'무료',thumb:'🌅',thumbBg:'linear-gradient(135deg,#F5C9A0,#A8C4A2)',desc:'서울 최고의 노을 뷰. 마음이 비워지는 공간.',tags:['자연','노을','힐링']},
+  {name:'리움미술관',district:'한남',mood:['artistic','quiet'],price:20000,priceLabel:'₩20,000',thumb:'🏺',thumbBg:'linear-gradient(135deg,#3D2C1E,#7A6020)',desc:'한국 전통과 현대미술을 잇는 세계적 수준의 미술관.',tags:['세계적','현대미술','전통']},
+  {name:'홍대 거리 갤러리',district:'홍대',mood:['aesthetic','trendy'],price:0,priceLabel:'무료',thumb:'🎪',thumbBg:'linear-gradient(135deg,#EDAAA0,#C9B8D8)',desc:'골목마다 숨어있는 인디 갤러리와 벽화들.',tags:['인디','거리예술','자유']},
+  {name:'창덕궁 후원',district:'종로',mood:['healing','traditional','quiet'],price:5000,priceLabel:'₩5,000',thumb:'🌳',thumbBg:'linear-gradient(135deg,#A8C4A2,#D4A97A)',desc:'비밀 정원 같은 후원. 예약 필수지만 그만한 가치.',tags:['후원','비밀정원','전통']},
+  {name:'성수 갤러리 어반',district:'성수',mood:['artistic','aesthetic'],price:12000,priceLabel:'₩12,000',thumb:'🏗️',thumbBg:'linear-gradient(135deg,#8B6F5E,#C9B8D8)',desc:'공장을 개조한 대형 전시 공간. 실험적 현대미술.',tags:['현대미술','산업적','실험적']},
+];
+
+const NEIGHBORHOODS = ['성수','종로','홍대','한남','이태원','마포','동대문'];
+
+const NBHD_DATA = {
+  '성수':  {pop:88,price:13500,vibe:[9,6,8,5,4,9],color:'#EDAAA0',desc:'힙한 팝업과 갤러리의 성지'},
+  '종로':  {pop:72,price:4000, vibe:[7,9,5,9,8,4],color:'#D4A97A',desc:'역사와 현대가 공존하는 문화 중심'},
+  '홍대':  {pop:85,price:3000, vibe:[6,5,9,4,3,9],color:'#C9B8D8',desc:'인디 문화와 자유로운 예술의 거리'},
+  '한남':  {pop:79,price:15000,vibe:[8,7,7,8,5,8],color:'#F5C9A0',desc:'고급스럽고 세련된 갤러리 밀집 지역'},
+  '이태원': {pop:68,price:10000,vibe:[5,8,8,6,4,7],color:'#A8C4A2',desc:'국제적 감성의 부티크 문화 공간'},
+  '마포':  {pop:65,price:2000, vibe:[9,4,6,5,4,5],color:'#BDDDE4',desc:'한강뷰와 자연 친화적 문화 공간'},
+  '동대문': {pop:75,price:6000, vibe:[6,7,7,7,6,8],color:'#F5C9A0',desc:'디자인과 패션이 만나는 복합 문화 공간'},
+};
+const VIBE_LABELS = ['힐링','전통적','조용함','예술성','트렌디','인스타감성'];
+
+const BUDGET_TIERS = [
+  {id:'free',label:'무료',emoji:'🎁',range:'₩0',max:0},
+  {id:'low', label:'가벼운 나들이',emoji:'☕',range:'₩1~₩8,000',max:8000},
+  {id:'mid', label:'데이트 코스',emoji:'💕',range:'₩8,001~₩15,000',max:15000},
+  {id:'high',label:'특별한 날',emoji:'✨',range:'₩15,001~',max:999999},
+];
+
+const MAP_SPOTS = [
+  {name:'성수',x:340,y:220,color:'#EDAAA0',desc:'팝업·갤러리의 성지',tags:['트렌디','감성']},
+  {name:'종로',x:230,y:170,color:'#D4A97A',desc:'역사와 문화의 중심',tags:['전통','고요']},
+  {name:'홍대',x:145,y:205,color:'#C9B8D8',desc:'인디 예술 자유 거리',tags:['자유','감성']},
+  {name:'한남',x:270,y:255,color:'#F5C9A0',desc:'세련된 갤러리 밀집',tags:['예술적','고급']},
+  {name:'이태원',x:220,y:270,color:'#A8C4A2',desc:'국제적 부티크 문화',tags:['국제적','트렌디']},
+  {name:'마포',x:155,y:255,color:'#BDDDE4',desc:'한강뷰 힐링 공간',tags:['힐링','자연']},
+  {name:'동대문',x:310,y:185,color:'#F08080',desc:'디자인·패션 복합',tags:['디자인','핫플']},
+];
+
+// ── INIT ──
+let selectedMood = null;
+let selectedNbhds = ['성수','종로','홍대'];
+let selectedBudget = 'free';
+let activeMapSpot = 0;
+
+// ── MOOD GRID ──
+const moodGrid = document.getElementById('mood-grid');
+MOODS.forEach(m => {
+  const btn = document.createElement('button');
+  btn.className = 'mood-btn';
+  btn.dataset.id = m.id;
+  btn.style.cssText = `--mc:${m.color};`;
+  btn.innerHTML = `<div class="mood-emoji">${m.emoji}</div><div class="mood-label">${m.label}</div><div class="mood-desc">${m.desc}</div>`;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedMood = m.id;
+    renderMoodResults(m.id);
+  });
+  moodGrid.appendChild(btn);
+});
+
+function renderMoodResults(moodId) {
+  const results = SPACES.filter(s => s.mood.includes(moodId));
+  const mood = MOODS.find(m => m.id === moodId);
+  const el = document.getElementById('mood-results');
+  el.innerHTML = `
+    <div class="result-header">
+      <div class="result-title">${mood.emoji} "${mood.label}" 기분에 어울리는 공간</div>
+      <div class="result-count">${results.length}곳 발견</div>
+    </div>
+    <div class="cards-grid">${results.map(cardHTML).join('')}</div>
+  `;
+}
+
+function cardHTML(s) {
+  return `
+    <div class="space-card">
+      <div class="card-thumb" style="background:${s.thumbBg}">${s.thumb}</div>
+      <div class="card-body">
+        <div class="card-district">${s.district}</div>
+        <div class="card-name">${s.name}</div>
+        <div class="card-desc">${s.desc}</div>
+        <div class="card-footer">
+          <span class="card-price">${s.priceLabel}</span>
+          <div class="card-tags">${s.tags.map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── COMPARE CONTROLS ──
+const compareControls = document.getElementById('compare-controls');
+NEIGHBORHOODS.forEach(n => {
+  const btn = document.createElement('button');
+  btn.className = 'compare-btn' + (selectedNbhds.includes(n) ? ' active' : '');
+  btn.textContent = n;
+  btn.addEventListener('click', () => {
+    if (selectedNbhds.includes(n)) {
+      if (selectedNbhds.length === 1) return;
+      selectedNbhds = selectedNbhds.filter(x => x !== n);
+    } else {
+      selectedNbhds.push(n);
+    }
+    btn.classList.toggle('active');
+    updateCharts();
+  });
+  compareControls.appendChild(btn);
+});
+
+// ── CHARTS ──
+const CHART_COLORS = Object.fromEntries(Object.entries(NBHD_DATA).map(([k,v]) => [k, v.color]));
+
+let barChart, priceChart, radarChart;
+
+function makeBar(id, labels, data, colors, label) {
+  const ctx = document.getElementById(id).getContext('2d');
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{label, data, backgroundColor: colors, borderRadius: 8, borderSkipped: false}]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {legend:{display:false}},
+      scales: {
+        x: {grid:{display:false}, ticks:{font:{family:'Noto Sans KR',size:11}, color:'#8B6F5E'}},
+        y: {grid:{color:'rgba(61,44,30,0.06)'}, ticks:{font:{size:11}, color:'#8B6F5E'}}
+      }
+    }
+  });
+}
+
+function makeRadar(labels, datasets) {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  return new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: VIBE_LABELS,
+      datasets
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {legend:{labels:{font:{family:'Noto Sans KR',size:11}, color:'#3D2C1E'}}},
+      scales: {
+        r: {
+          min:0, max:10,
+          ticks:{display:false},
+          grid:{color:'rgba(61,44,30,0.08)'},
+          pointLabels:{font:{family:'Noto Sans KR',size:11}, color:'#3D2C1E'}
+        }
+      }
+    }
+  });
+}
+
+function initCharts() {
+  const ns = selectedNbhds;
+  barChart = makeBar('barChart', ns, ns.map(n=>NBHD_DATA[n].pop), ns.map(n=>NBHD_DATA[n].color), '인기도');
+  priceChart = makeBar('priceChart', ns, ns.map(n=>NBHD_DATA[n].price), ns.map(n=>NBHD_DATA[n].color), '평균 입장료(원)');
+  const datasets = ns.map(n => ({
+    label: n,
+    data: NBHD_DATA[n].vibe,
+    backgroundColor: NBHD_DATA[n].color + '44',
+    borderColor: NBHD_DATA[n].color,
+    borderWidth: 2,
+    pointBackgroundColor: NBHD_DATA[n].color,
+  }));
+  radarChart = makeRadar(VIBE_LABELS, datasets);
+  renderTable();
+}
+
+function updateCharts() {
+  const ns = selectedNbhds;
+  barChart.data.labels = ns;
+  barChart.data.datasets[0].data = ns.map(n=>NBHD_DATA[n].pop);
+  barChart.data.datasets[0].backgroundColor = ns.map(n=>NBHD_DATA[n].color);
+  barChart.update();
+  priceChart.data.labels = ns;
+  priceChart.data.datasets[0].data = ns.map(n=>NBHD_DATA[n].price);
+  priceChart.data.datasets[0].backgroundColor = ns.map(n=>NBHD_DATA[n].color);
+  priceChart.update();
+  radarChart.data.datasets = ns.map(n => ({
+    label: n, data: NBHD_DATA[n].vibe,
+    backgroundColor: NBHD_DATA[n].color + '44',
+    borderColor: NBHD_DATA[n].color, borderWidth:2,
+    pointBackgroundColor: NBHD_DATA[n].color,
+  }));
+  radarChart.update();
+  renderTable();
+}
+
+function renderTable() {
+  const t = document.getElementById('nbhd-table');
+  const GRADE = v => v >= 80 ? ['#A8C4A2','#2D6B29'] : v >= 65 ? ['#F5C9A0','#7A6020'] : ['#F0C0C0','#9B3030'];
+  t.innerHTML = `<tr><th>동네</th><th>인기도</th><th>평균 입장료</th><th>분위기</th></tr>` +
+    selectedNbhds.map(n => {
+      const d = NBHD_DATA[n]; const [bg,tc] = GRADE(d.pop);
+      return `<tr>
+        <td><strong>${n}</strong><br><span style="font-size:11px;color:#8B6F5E">${d.desc}</span></td>
+        <td><span class="nbhd-pill" style="background:${bg};color:${tc}">${d.pop}점</span></td>
+        <td>${d.price === 0 ? '무료' : '₩'+d.price.toLocaleString()}</td>
+        <td style="font-size:12px;color:#8B6F5E">${VIBE_LABELS[d.vibe.indexOf(Math.max(...d.vibe))]}</td>
+      </tr>`;
+    }).join('');
+}
+
+// ── BUDGET ──
+const budgetRow = document.getElementById('budget-row');
+BUDGET_TIERS.forEach(b => {
+  const btn = document.createElement('button');
+  btn.className = 'budget-btn' + (b.id === selectedBudget ? ' active' : '');
+  btn.innerHTML = `<span style="font-size:20px">${b.emoji}</span><span style="font-weight:500">${b.label}</span><span class="budget-range">${b.range}</span>`;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.budget-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedBudget = b.id;
+    renderBudget(b);
+  });
+  budgetRow.appendChild(btn);
+});
+
+function renderBudget(tier) {
+  const filtered = SPACES.filter(s => {
+    if (tier.id === 'free') return s.price === 0;
+    if (tier.id === 'low') return s.price > 0 && s.price <= 8000;
+    if (tier.id === 'mid') return s.price > 8000 && s.price <= 15000;
+    return s.price > 15000;
+  });
+  const el = document.getElementById('budget-cards');
+  el.innerHTML = filtered.length
+    ? filtered.map(cardHTML).join('')
+    : `<div style="padding:40px;text-align:center;color:var(--muted);font-size:14px;">해당 예산의 공간이 없어요 😢</div>`;
+}
+renderBudget(BUDGET_TIERS[0]);
+
+// ── DATA VIZ CHARTS ──
+function initVizCharts() {
+  // Monthly
+  const mCtx = document.getElementById('monthChart').getContext('2d');
+  new Chart(mCtx, {
+    type:'line',
+    data:{
+      labels:['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+      datasets:[{
+        label:'전시 오픈 수',
+        data:[4,5,9,12,10,8,7,9,14,13,11,6],
+        borderColor:'#EDAAA0', backgroundColor:'rgba(237,170,160,0.12)',
+        fill:true, tension:.4, borderWidth:2,
+        pointBackgroundColor:'#EDAAA0', pointRadius:4,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:10},color:'#8B6F5E'}},
+        y:{grid:{color:'rgba(61,44,30,0.06)'},ticks:{font:{size:10},color:'#8B6F5E'}}
+      }
+    }
+  });
+
+  // Type donut
+  const tCtx = document.getElementById('typeChart').getContext('2d');
+  new Chart(tCtx, {
+    type:'doughnut',
+    data:{
+      labels:['현대미술관','갤러리','문화복합','궁궐·전통','자연·공원','팝업스토어'],
+      datasets:[{
+        data:[12,9,8,7,6,5],
+        backgroundColor:['#EDAAA0','#C9B8D8','#F5C9A0','#D4A97A','#A8C4A2','#BDDDE4'],
+        borderWidth:0, hoverOffset:6,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{font:{family:'Noto Sans KR',size:11},color:'#3D2C1E',padding:12}}
+      },
+      cutout:'62%'
+    }
+  });
+
+  // Mood bar
+  const mbCtx = document.getElementById('moodBarChart').getContext('2d');
+  new Chart(mbCtx, {
+    type:'bar',
+    data:{
+      labels:MOODS.map(m=>m.emoji+' '+m.label),
+      datasets:[{
+        label:'공간 수',
+        data:MOODS.map(m=>SPACES.filter(s=>s.mood.includes(m.id)).length),
+        backgroundColor:MOODS.map(m=>m.color+'99'),
+        borderColor:MOODS.map(m=>m.color),
+        borderWidth:1.5, borderRadius:8, borderSkipped:false,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{family:'Noto Sans KR',size:12},color:'#3D2C1E'}},
+        y:{grid:{color:'rgba(61,44,30,0.06)'},ticks:{font:{size:11},color:'#8B6F5E'}}
+      }
+    }
+  });
+}
+
+// ── MAP ──
+function initMap() {
+  const svg = document.getElementById('map-markers');
+  MAP_SPOTS.forEach((spot, i) => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.style.cursor = 'pointer';
+    // Pulse
+    const pulse = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    pulse.setAttribute('cx',spot.x); pulse.setAttribute('cy',spot.y); pulse.setAttribute('r','14');
+    pulse.setAttribute('fill',spot.color+'33'); pulse.setAttribute('stroke',spot.color); pulse.setAttribute('stroke-width','0.5');
+    pulse.innerHTML = `<animate attributeName="r" from="10" to="22" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" from="0.6" to="0" dur="2s" repeatCount="indefinite"/>`;
+    // Dot
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('cx',spot.x); circle.setAttribute('cy',spot.y); circle.setAttribute('r','8');
+    circle.setAttribute('fill',spot.color); circle.setAttribute('stroke','white'); circle.setAttribute('stroke-width','2');
+    // Label
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x',spot.x+12); text.setAttribute('y',spot.y+4);
+    text.setAttribute('font-family','Noto Sans KR,sans-serif'); text.setAttribute('font-size','11');
+    text.setAttribute('fill','#3D2C1E'); text.setAttribute('font-weight','500');
+    text.textContent = spot.name;
+    g.appendChild(pulse); g.appendChild(circle); g.appendChild(text);
+    g.addEventListener('click', () => activateSpot(i));
+    svg.appendChild(g);
+  });
+
+  const list = document.getElementById('map-list');
+  MAP_SPOTS.forEach((spot, i) => {
+    const item = document.createElement('div');
+    item.className = 'map-item' + (i===0?' active':'');
+    item.dataset.i = i;
+    item.innerHTML = `
+      <div class="map-item-top">
+        <div class="map-dot" style="background:${spot.color}"></div>
+        <div class="map-item-name">${spot.name}</div>
+      </div>
+      <div class="map-item-desc">${spot.desc}</div>
+      <div class="map-item-tags">${spot.tags.map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>`;
+    item.addEventListener('click', () => activateSpot(i));
+    list.appendChild(item);
+  });
+}
+
+function activateSpot(i) {
+  activeMapSpot = i;
+  document.querySelectorAll('.map-item').forEach((el,j) => {
+    el.classList.toggle('active', j===i);
+  });
+}
+
+// ── NAV SCROLL ──
+function scrollTo(id, btn) {
+  document.querySelector(id).scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── SCROLL REVEAL ──
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ── BOOT ──
+initCharts();
+initVizCharts();
+initMap();
+
+// Select first mood
+document.querySelector('.mood-btn').click();
+</script>
+</body>
+</html>
