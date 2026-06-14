@@ -1,601 +1,319 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Hyojung Park — Dance & Space</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Noto+Sans+KR:wght@300;400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
-<style>
-/* ── RESET & ROOT ── */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#100e0b;
-  --bg2:#161210;
-  --bg3:#1d1915;
-  --paper:#f2ece2;
-  --dust:#c4b9a8;
-  --fog:#7a6e62;
-  --border:rgba(242,236,226,.08);
-  --terracotta:#c8724e;
-  --terracotta-glow:rgba(200,114,78,.18);
-  --sage:#7da492;
-  --gold:#c9a96e;
-  --shadow-warm:0 8px 40px rgba(200,114,78,.12);
-}
-html{scroll-behavior:smooth}
-body{
-  background:var(--bg);
-  color:var(--paper);
-  font-family:'Noto Sans KR',sans-serif;
-  font-weight:300;
-  overflow-x:hidden;
-  cursor:none;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Park Hyo-jung | Portfolio</title>
+    <style>
+        /* Modern Reset & Smooth Scrolling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
 
-/* ── CUSTOM CURSOR ── */
-#cur{
-  position:fixed;width:8px;height:8px;
-  background:var(--terracotta);border-radius:50%;
-  pointer-events:none;z-index:9999;
-  transform:translate(-50%,-50%);
-  transition:width .15s,height .15s;
-}
-#cur-ring{
-  position:fixed;width:32px;height:32px;
-  border:1px solid rgba(200,114,78,.4);border-radius:50%;
-  pointer-events:none;z-index:9998;
-  transform:translate(-50%,-50%);
-  transition:transform .14s ease;
-}
-body.hovering #cur{width:20px;height:20px;background:rgba(200,114,78,.3)}
-body.hovering #cur-ring{width:48px;height:48px;}
+        /* Clean Dark Theme & Variables */
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-/* ── NOISE GRAIN ── */
-body::after{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:500;opacity:.4;
-}
+        /* Navigation Bar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #21262d;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #1f883d, #4ffb7e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        .nav-links a {
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover {
+            color: #4ffb7e;
+        }
 
-/* ── NAV ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:400;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:28px 56px;
-  background:linear-gradient(to bottom,rgba(16,14,11,.95) 0%,transparent 100%);
-}
-.nav-logo{
-  font-family:'Cormorant Garamond',serif;
-  font-size:16px;font-weight:300;letter-spacing:.06em;
-  color:var(--dust);
-}
-.nav-logo em{font-style:italic;color:var(--terracotta)}
-.nav-links{display:flex;gap:36px;list-style:none}
-.nav-links a{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:.22em;text-transform:uppercase;
-  color:var(--fog);text-decoration:none;
-  transition:color .25s ease;
-}
-.nav-links a:hover{color:var(--terracotta)}
+        /* Hero Section with Premium Gradients */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            background: radial-gradient(circle at 50% 30%, #161b22 0%, #0d1117 70%);
+            position: relative;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #f0f6fc;
+            letter-spacing: -0.05em;
+        }
+        .hero h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #8b949e;
+            margin-bottom: 2rem;
+        }
+        .hero .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(45deg, #1f883d, #2ea44f);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(31, 136, 61, 0.3);
+        }
+        .hero .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(79, 251, 126, 0.4);
+        }
 
-/* ── HERO ── */
-#hero{
-  min-height:100vh;
-  display:grid;grid-template-columns:1fr 1fr;
-  align-items:center;
-  padding:0 56px;
-  position:relative;overflow:hidden;
-}
-.hero-bg{
-  position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 65% 55% at 75% 45%,rgba(200,114,78,.09),transparent 65%),
-    radial-gradient(ellipse 40% 60% at 20% 70%,rgba(125,164,146,.07),transparent 55%),
-    linear-gradient(160deg,var(--bg) 0%,#120f0c 60%,#0e100d 100%);
-}
-/* decorative rotating lines */
-.hero-deco{
-  position:absolute;right:-60px;top:50%;transform:translateY(-50%);
-  width:600px;height:600px;opacity:.07;
-  animation:slowspin 40s linear infinite;
-}
-@keyframes slowspin{to{transform:translateY(-50%) rotate(360deg)}}
+        /* Section Layouts */
+        section {
+            padding: 8rem 2rem 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f0f6fc;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: #1f883d;
+            border-radius: 2px;
+        }
 
-.hero-left{position:relative;z-index:2}
-.hero-tag{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:.28em;color:var(--terracotta);text-transform:uppercase;
-  margin-bottom:28px;
-  opacity:0;animation:fadeup .9s ease .3s forwards;
-  display:flex;align-items:center;gap:14px;
-}
-.hero-tag::before{content:'';width:28px;height:1px;background:var(--terracotta)}
-.hero-name{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(68px,8vw,120px);
-  font-weight:300;line-height:.92;
-  letter-spacing:-.02em;
-  opacity:0;animation:fadeup 1s ease .5s forwards;
-}
-.hero-name .line2{
-  font-style:italic;color:var(--terracotta);
-  display:block;margin-left:24px;
-}
-.hero-sub{
-  margin-top:36px;
-  font-size:15px;color:var(--dust);line-height:1.85;
-  max-width:420px;
-  opacity:0;animation:fadeup .9s ease .75s forwards;
-}
-.hero-cta{
-  display:inline-flex;align-items:center;gap:12px;
-  margin-top:40px;
-  font-family:'DM Mono',monospace;font-size:11px;
-  letter-spacing:.2em;text-transform:uppercase;
-  color:var(--paper);text-decoration:none;
-  border:1px solid rgba(242,236,226,.15);
-  padding:14px 28px;border-radius:2px;
-  transition:all .3s ease;
-  opacity:0;animation:fadeup .9s ease 1s forwards;
-}
-.hero-cta:hover{
-  background:var(--terracotta);border-color:var(--terracotta);
-  box-shadow:var(--shadow-warm);
-}
-.hero-right{
-  position:relative;z-index:2;
-  display:flex;justify-content:center;align-items:center;
-  opacity:0;animation:fadein 1.2s ease .8s forwards;
-}
-/* Abstract body-space illustration */
-.hero-art{
-  width:380px;height:460px;position:relative;
-}
-.hero-art svg{width:100%;height:100%}
+        /* About Me Section */
+        .about-content {
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .about-content p {
+            font-size: 1.1rem;
+            color: #c9d1d9;
+            margin-bottom: 1.5rem;
+            word-break: keep-all;
+        }
 
-/* Scroll indicator */
-.scroll-hint{
-  position:absolute;bottom:44px;left:56px;
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:.2em;color:var(--fog);text-transform:uppercase;
-  display:flex;align-items:center;gap:14px;
-  opacity:0;animation:fadein 1s ease 1.4s forwards;
-}
-.scroll-hint::after{
-  content:'';width:48px;height:1px;
-  background:linear-gradient(to right,var(--fog),transparent);
-  animation:pulse 2s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+        /* Projects Section (Responsive Grid) */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .project-card {
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: #30363d;
+        }
+        .project-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4ffb7e;
+            background: rgba(31, 136, 61, 0.15);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+        .project-card h3 {
+            color: #f0f6fc;
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+        }
+        .project-card p {
+            font-size: 0.95rem;
+            color: #8b949e;
+        }
 
-@keyframes fadeup{
-  from{opacity:0;transform:translateY(32px)}
-  to{opacity:1;transform:translateY(0)}
-}
-@keyframes fadein{from{opacity:0}to{opacity:1}}
+        /* Skills Section */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .skill-badge {
+            background: #21262d;
+            color: #c9d1d9;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            border: 1px solid #30363d;
+            transition: background 0.3s, color 0.3s;
+        }
+        .skill-badge:hover {
+            background: #1f883d;
+            color: #ffffff;
+            border-color: #1f883d;
+        }
 
-/* ── DIVIDER ── */
-.divider{
-  height:1px;margin:0 56px;
-  background:linear-gradient(90deg,transparent,var(--border),transparent);
-}
+        /* Contact Section */
+        .contact-box {
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            border: 1px solid #21262d;
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+        }
+        .contact-box p {
+            margin-bottom: 1.5rem;
+            color: #8b949e;
+        }
+        .contact-email {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4ffb7e;
+            text-decoration: none;
+            word-break: break-all;
+        }
 
-/* ── SECTIONS SHARED ── */
-section{padding:120px 56px}
-.sec-eyebrow{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:.28em;color:var(--terracotta);text-transform:uppercase;
-  display:flex;align-items:center;gap:14px;margin-bottom:16px;
-}
-.sec-eyebrow::before{content:'';width:28px;height:1px;background:var(--terracotta)}
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #484f58;
+            font-size: 0.85rem;
+            border-top: 1px solid #21262d;
+        }
 
-/* ── ABOUT ── */
-#about{background:var(--bg2)}
-.about-grid{
-  display:grid;grid-template-columns:1.1fr 1fr;gap:80px;
-  align-items:start;
-}
-.about-headline{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(38px,4.5vw,62px);
-  font-weight:300;line-height:1.12;
-  letter-spacing:-.01em;
-}
-.about-headline em{font-style:italic;color:var(--sage)}
-.about-kicker{
-  font-family:'DM Mono',monospace;font-size:11px;
-  letter-spacing:.14em;color:var(--fog);
-  text-transform:uppercase;
-  margin-top:28px;
-  border-left:2px solid var(--terracotta);
-  padding-left:14px;line-height:1.7;
-}
-.about-body{
-  font-size:15px;color:var(--dust);line-height:1.9;
-}
-.about-body p+p{margin-top:20px}
-.about-quote{
-  font-family:'Cormorant Garamond',serif;
-  font-size:20px;font-style:italic;font-weight:300;
-  color:var(--terracotta);line-height:1.6;
-  margin-top:28px;padding-top:24px;
-  border-top:1px solid var(--border);
-}
-
-/* ── PROJECTS ── */
-#projects{background:var(--bg)}
-.project-headline{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(36px,4vw,56px);font-weight:300;
-  margin-bottom:60px;max-width:640px;line-height:1.15;
-}
-.project-card{
-  display:grid;grid-template-columns:64px 1fr auto;
-  gap:0;align-items:stretch;
-  border:1px solid var(--border);border-radius:6px;
-  overflow:hidden;margin-bottom:16px;
-  background:var(--bg2);
-  transition:all .35s ease;
-  position:relative;
-}
-.project-card::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:0;
-  background:var(--terracotta-glow);transition:width .4s ease;
-}
-.project-card:hover{border-color:rgba(200,114,78,.35);transform:translateX(4px)}
-.project-card:hover::before{width:100%}
-.project-num{
-  background:var(--bg3);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'DM Mono',monospace;font-size:11px;
-  color:var(--fog);letter-spacing:.1em;
-  border-right:1px solid var(--border);
-  position:relative;z-index:1;
-}
-.project-body{padding:28px 32px;position:relative;z-index:1}
-.project-title{
-  font-family:'Cormorant Garamond',serif;
-  font-size:22px;font-weight:400;margin-bottom:10px;
-}
-.project-desc{font-size:13px;color:var(--dust);line-height:1.75;max-width:560px}
-.project-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
-.project-tag{
-  font-family:'DM Mono',monospace;font-size:9px;
-  letter-spacing:.14em;text-transform:uppercase;
-  color:var(--fog);border:1px solid var(--border);
-  padding:4px 11px;border-radius:2px;
-}
-.project-arrow{
-  display:flex;align-items:center;justify-content:center;
-  padding:0 28px;border-left:1px solid var(--border);
-  color:var(--fog);font-size:18px;
-  transition:all .3s ease;position:relative;z-index:1;
-}
-.project-card:hover .project-arrow{color:var(--terracotta);transform:rotate(45deg)}
-
-/* ── SKILLS ── */
-#skills{background:var(--bg2)}
-.skills-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
-.skills-intro{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(34px,3.8vw,52px);font-weight:300;line-height:1.15;
-  margin-bottom:24px;
-}
-.skills-intro em{font-style:italic;color:var(--terracotta)}
-.skills-desc{font-size:14px;color:var(--fog);line-height:1.8}
-.skills-list{}
-.skill-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:22px 0;border-bottom:1px solid var(--border);
-  position:relative;overflow:hidden;cursor:default;
-}
-.skill-row::after{
-  content:'';position:absolute;
-  bottom:0;left:0;height:1px;width:0;
-  background:var(--terracotta);transition:width .5s ease;
-}
-.skill-row:hover::after{width:100%}
-.skill-name{
-  font-family:'Cormorant Garamond',serif;
-  font-size:26px;font-weight:300;
-  transition:color .3s;
-}
-.skill-row:hover .skill-name{color:var(--terracotta)}
-.skill-badge{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:.15em;color:var(--fog);
-  text-transform:uppercase;
-  border:1px solid var(--border);padding:4px 12px;border-radius:20px;
-  transition:all .3s ease;
-}
-.skill-row:hover .skill-badge{border-color:var(--terracotta);color:var(--terracotta)}
-
-/* ── CONTACT ── */
-#contact{
-  background:var(--bg);
-  text-align:center;padding:140px 56px;
-  position:relative;overflow:hidden;
-}
-#contact::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(200,114,78,.06),transparent 70%);
-}
-.contact-label{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:.28em;color:var(--terracotta);text-transform:uppercase;
-  margin-bottom:24px;display:block;position:relative;z-index:2;
-}
-.contact-headline{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(52px,8vw,110px);
-  font-weight:300;line-height:.95;letter-spacing:-.02em;
-  margin-bottom:48px;position:relative;z-index:2;
-}
-.contact-headline em{font-style:italic;color:var(--terracotta);display:block}
-.contact-links{
-  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
-  position:relative;z-index:2;
-}
-.c-link{
-  font-family:'DM Mono',monospace;font-size:11px;
-  letter-spacing:.2em;text-transform:uppercase;
-  color:var(--paper);text-decoration:none;
-  border:1px solid rgba(242,236,226,.18);
-  padding:14px 32px;border-radius:2px;
-  transition:all .3s ease;
-  display:inline-flex;align-items:center;gap:10px;
-}
-.c-link:hover{background:var(--terracotta);border-color:var(--terracotta);box-shadow:var(--shadow-warm)}
-.c-link.primary{background:var(--terracotta);border-color:var(--terracotta)}
-.c-link.primary:hover{background:transparent;color:var(--dust)}
-
-/* ── FOOTER ── */
-footer{
-  padding:28px 56px;
-  border-top:1px solid var(--border);
-  display:flex;justify-content:space-between;align-items:center;
-  background:var(--bg2);
-}
-.foot-l{font-family:'DM Mono',monospace;font-size:10px;color:var(--fog);letter-spacing:.1em}
-.foot-r{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--fog);font-style:italic}
-
-/* ── REVEAL ── */
-.reveal{opacity:0;transform:translateY(36px);transition:opacity .8s ease,transform .8s ease}
-.reveal.in{opacity:1;transform:none}
-.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}
-
-/* ── RESPONSIVE ── */
-@media(max-width:860px){
-  nav{padding:20px 24px}
-  nav .nav-links{display:none}
-  #hero{grid-template-columns:1fr;padding:100px 24px 60px}
-  .hero-right{display:none}
-  .hero-name{font-size:clamp(52px,13vw,80px)}
-  section{padding:80px 24px}
-  .about-grid,.skills-layout{grid-template-columns:1fr;gap:40px}
-  .project-card{grid-template-columns:1fr}
-  .project-num,.project-arrow{display:none}
-  .divider{margin:0 24px}
-  footer{flex-direction:column;gap:10px;text-align:center;padding:24px}
-  .scroll-hint{left:24px}
-}
-</style>
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; } /* Mobile simplicity */
+            section { padding-top: 6rem; }
+        }
+    </style>
 </head>
 <body>
 
-<div id="cur"></div>
-<div id="cur-ring"></div>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-logo">HyoJung.Park</div>
+        <ul class="nav-links">
+            <li><a href="#about">About Me</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
 
-<!-- ── NAV ── -->
-<nav>
-  <div class="nav-logo">Hyojung <em>Park</em></div>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1>Park Hyo-jung</h1>
+        <h2>Korean Dance & Big Data @ SKKU</h2>
+        <a href="#projects" class="btn">View My Work</a>
+    </header>
 
-<!-- ── HERO ── -->
-<section id="hero">
-  <div class="hero-bg"></div>
+    <!-- About Me Section -->
+    <section id="about">
+        <h2 class="section-title">About Me</h2>
+        <div class="about-content">
+            <p>안녕하세요! 성균관대학교에서 한국무용을 전공하고 있는 박효정입니다.</p>
+            <p>무용수로서 무대 위 공간과 관객의 호흡에 대해 깊이 고민해 왔으며, 나아가 주관적인 감성과 공간적 아름다움을 객관적인 디지털 데이터의 궤적으로 전환하는 융합적 가치에 매료되어 예술 빅데이터 연구를 함께 진행하고 있습니다.</p>
+            <p>전통적인 신체의 움직임을 넘어, 데이터라는 새로운 도구를 통해 사람들에게 더 정교하고 감 감각적인 문화 예술 경험을 설계하고 제안하는 기획자가 되고자 합니다.</p>
+        </div>
+    </section>
 
-  <!-- Decorative SVG -->
-  <svg class="hero-deco" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="300" cy="300" r="240" stroke="#c8724e" stroke-width=".8"/>
-    <circle cx="300" cy="300" r="180" stroke="#7da492" stroke-width=".5"/>
-    <circle cx="300" cy="300" r="120" stroke="#c9a96e" stroke-width=".4"/>
-    <circle cx="300" cy="300" r="60"  stroke="#c8724e" stroke-width=".3"/>
-    <line x1="0"   y1="300" x2="600" y2="300" stroke="#c8724e" stroke-width=".5"/>
-    <line x1="300" y1="0"   x2="300" y2="600" stroke="#7da492" stroke-width=".4"/>
-    <line x1="60"  y1="60"  x2="540" y2="540" stroke="#c9a96e" stroke-width=".4"/>
-    <line x1="540" y1="60"  x2="60"  y2="540" stroke="#c8724e" stroke-width=".3"/>
-    <ellipse cx="300" cy="300" rx="260" ry="140" stroke="#c8724e" stroke-width=".4" transform="rotate(-30 300 300)"/>
-    <ellipse cx="300" cy="300" rx="260" ry="140" stroke="#7da492" stroke-width=".3" transform="rotate(30 300 300)"/>
-  </svg>
+    <!-- Projects Section -->
+    <section id="projects">
+        <h2 class="section-title">Projects</h2>
+        <div class="project-grid">
+            
+            <!-- Project 1 -->
+            <div class="project-card">
+                <span class="project-tag">Streamlit Web App</span>
+                <h3>Seoul Exhibition Dashboard</h3>
+                <p>정부 및 서울시 공공데이터 API를 기반으로 구축한 사용자 맞춤형 문화 예술 공간 큐레이션 대시보드입니다. 방문자 리뷰 텍스트 마이닝을 통한 '감성 무드 매칭 시스템'과 개인 맞춤형 '예산 최적화 필터' 기능을 구현했습니다.</p>
+            </div>
 
-  <div class="hero-left">
-    <div class="hero-tag">Dance · Space · Body</div>
-    <h1 class="hero-name">
-      Hyojung<span class="line2">Park</span>
-    </h1>
-    <p class="hero-sub">
-      Dance major at Sungkyunkwan University — exploring the relationship between space, atmosphere, and the moving body.
-    </p>
-    <a href="#about" class="hero-cta">Discover My Work →</a>
-  </div>
+            <!-- Project 2 -->
+            <div class="project-card">
+                <span class="project-tag">Dance Video Project</span>
+                <h3>The Tree and the Forest</h3>
+                <p>인간의 집착과 내면의 디테일을 무용으로 풀어낸 졸업 비디오 영상 프로젝트입니다. 드론 촬영 기법과 핸드서클 프레임 연출을 활용해 자연 공간 속 자연물과 인간 신체의 유기적 조화를 시각화했습니다.</p>
+            </div>
 
-  <div class="hero-right">
-    <div class="hero-art">
-      <svg viewBox="0 0 380 460" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Abstract figure in space -->
-        <ellipse cx="190" cy="230" rx="155" ry="195" stroke="rgba(200,114,78,.2)" stroke-width="1"/>
-        <ellipse cx="190" cy="230" rx="110" ry="145" stroke="rgba(200,114,78,.15)" stroke-width="1"/>
-        <!-- Body silhouette abstracted -->
-        <path d="M190 80 C190 80 210 130 215 170 C220 210 200 235 190 260 C180 285 170 310 175 350 C178 370 185 390 190 400" stroke="rgba(200,114,78,.7)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        <!-- Arms sweeping -->
-        <path d="M190 160 C160 145 120 130 80 145 C60 152 50 165 60 175" stroke="rgba(242,236,226,.25)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-        <path d="M190 160 C220 148 260 138 300 155 C320 163 325 178 315 185" stroke="rgba(242,236,226,.25)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-        <!-- Head -->
-        <circle cx="190" cy="72" r="22" stroke="rgba(200,114,78,.5)" stroke-width="1.5" fill="rgba(200,114,78,.05)"/>
-        <!-- Ground / space lines -->
-        <line x1="40" y1="400" x2="340" y2="400" stroke="rgba(125,164,146,.25)" stroke-width="1"/>
-        <line x1="20" y1="415" x2="360" y2="415" stroke="rgba(125,164,146,.12)" stroke-width="1"/>
-        <!-- Floating particles -->
-        <circle cx="110" cy="140" r="2.5" fill="rgba(200,114,78,.6)"/>
-        <circle cx="275" cy="195" r="1.8" fill="rgba(201,169,110,.5)"/>
-        <circle cx="88"  cy="280" r="2"   fill="rgba(125,164,146,.5)"/>
-        <circle cx="308" cy="310" r="1.5" fill="rgba(200,114,78,.4)"/>
-        <circle cx="150" cy="60"  r="1.5" fill="rgba(242,236,226,.2)"/>
-        <circle cx="235" cy="55"  r="2"   fill="rgba(201,169,110,.3)"/>
-        <!-- spatial grid suggestion -->
-        <line x1="40"  y1="230" x2="340" y2="230" stroke="rgba(242,236,226,.04)" stroke-width="1"/>
-        <line x1="190" y1="40"  x2="190" y2="420" stroke="rgba(242,236,226,.04)" stroke-width="1"/>
-        <rect x="105" y="120" width="170" height="200" rx="2" stroke="rgba(125,164,146,.1)" stroke-width=".8" stroke-dasharray="4 4"/>
-      </svg>
-    </div>
-  </div>
+        </div>
+    </section>
 
-  <div class="scroll-hint">Scroll to explore</div>
-</section>
+    <!-- Skills Section -->
+    <section id="skills">
+        <h2 class="section-title">Skills</h2>
+        <div class="skills-container">
+            <div class="skill-badge">Korean Dance & Choreography</div>
+            <div class="skill-badge">Python 3.9</div>
+            <div class="skill-badge">Streamlit</div>
+            <div class="skill-badge">Pandas (Data Preprocessing)</div>
+            <div class="skill-badge">Plotly (Interactive Analytics)</div>
+            <div class="skill-badge">Art Direction & PRD Planning</div>
+        </div>
+    </section>
 
-<div class="divider"></div>
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2 class="section-title">Contact</h2>
+        <div class="contact-box">
+            <p>새로운 융합 예술 프로젝트 제안이나 협업 관련 문의는 언제든 환영합니다.</p>
+            <a href="mailto:hyojung@example.com" class="contact-email">hyojung@example.com</a>
+        </div>
+    </section>
 
-<!-- ── ABOUT ── -->
-<section id="about">
-  <div class="about-grid">
-    <div>
-      <div class="sec-eyebrow reveal">About Me</div>
-      <h2 class="about-headline reveal reveal-d1">
-        Where the body<br>meets the <em>space</em>
-      </h2>
-      <p class="about-kicker reveal reveal-d2">
-        SKKU Dance Major<br>성균관대학교 무용학과
-      </p>
-    </div>
-    <div class="about-body reveal reveal-d1">
-      <p>I am a dance major at Sungkyunkwan University, drawn to the profound relationship between the body and the spaces it inhabits. My practice lives at the intersection of movement, architecture, and lived atmosphere.</p>
-      <p>I enjoy exploring exhibitions and cultural spaces — not merely as a visitor, but as a researcher of sensation. I am endlessly curious about how a room's light, scale, and texture can alter emotional states and inspire entirely different kinds of movement.</p>
-      <p>This curiosity drives everything I create: to understand how atmosphere shapes the dancer before the dancer shapes the stage.</p>
-      <div class="about-quote reveal reveal-d2">
-        "공간의 분위기가 몸의 움직임을 먼저 만들어냅니다."<br>
-        <span style="font-size:14px;color:var(--fog);font-style:normal;font-family:'DM Mono',monospace;letter-spacing:.05em">The atmosphere of a space shapes the body's movement first.</span>
-      </div>
-    </div>
-  </div>
-</section>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Park Hyo-jung. All Rights Reserved. Built with passion at SKKU.</p>
+    </footer>
 
-<div class="divider"></div>
-
-<!-- ── PROJECTS ── -->
-<section id="projects">
-  <div class="sec-eyebrow reveal">Featured Projects</div>
-  <h2 class="project-headline reveal reveal-d1">
-    Work that lives at the edge of<br><em style="font-style:italic;color:var(--terracotta)">art and inquiry</em>
-  </h2>
-
-  <div class="project-card reveal reveal-d2">
-    <div class="project-num">01</div>
-    <div class="project-body">
-      <div class="project-title">Seoul Exhibition & Space Discovery Dashboard</div>
-      <div class="project-desc">
-        An interactive data visualization platform for discovering Seoul's cultural spaces — curated by mood, atmosphere, neighborhood, and budget. Built for the Arts & Big Data course at SKKU, the dashboard transforms subjective feelings about space into a personalized, data-driven recommendation experience.
-      </div>
-      <div class="project-tags">
-        <span class="project-tag">Arts & Big Data</span>
-        <span class="project-tag">Data Visualization</span>
-        <span class="project-tag">Seoul Culture</span>
-        <span class="project-tag">Space Research</span>
-        <span class="project-tag">Python · Streamlit</span>
-      </div>
-    </div>
-    <div class="project-arrow">→</div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ── SKILLS ── -->
-<section id="skills">
-  <div class="skills-layout">
-    <div>
-      <div class="sec-eyebrow reveal">Skills & Practice</div>
-      <h2 class="skills-intro reveal reveal-d1">
-        The <em>craft</em><br>behind the<br>movement
-      </h2>
-      <p class="skills-desc reveal reveal-d2">
-        A practice built on physical mastery, spatial intelligence, cultural curiosity, and an artist's eye for the world.
-      </p>
-    </div>
-    <div class="skills-list reveal reveal-d1">
-      <div class="skill-row">
-        <span class="skill-name">💃 Dance</span>
-        <span class="skill-badge">Core Practice</span>
-      </div>
-      <div class="skill-row">
-        <span class="skill-name">✨ Creativity</span>
-        <span class="skill-badge">Vision</span>
-      </div>
-      <div class="skill-row">
-        <span class="skill-name">🏛️ Space Research</span>
-        <span class="skill-badge">Academic</span>
-      </div>
-      <div class="skill-row">
-        <span class="skill-name">🎭 Performance</span>
-        <span class="skill-badge">Stage</span>
-      </div>
-      <div class="skill-row">
-        <span class="skill-name">🎨 Art & Culture</span>
-        <span class="skill-badge">Passion</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ── CONTACT ── -->
-<section id="contact">
-  <span class="contact-label">Let's connect</span>
-  <h2 class="contact-headline reveal">
-    Say<br><em>hello</em>
-  </h2>
-  <div class="contact-links reveal reveal-d1">
-    <a href="mailto:hyojung@example.com" class="c-link primary">✉ Email Me</a>
-    <a href="#" class="c-link">Instagram</a>
-    <a href="#" class="c-link">LinkedIn</a>
-  </div>
-</section>
-
-<!-- ── FOOTER ── -->
-<footer>
-  <div class="foot-l">© 2025 Hyojung Park · SKKU Dance</div>
-  <div class="foot-r">Space shapes movement. Movement shapes space.</div>
-</footer>
-
-<script>
-// cursor
-const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
-(function tick(){
-  cur.style.left=mx+'px';cur.style.top=my+'px';
-  rx+=(mx-rx)*.13;ry+=(my-ry)*.13;
-  ring.style.left=rx+'px';ring.style.top=ry+'px';
-  requestAnimationFrame(tick);
-})();
-document.querySelectorAll('a,button,.skill-row,.project-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
-  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
-});
-
-// scroll reveal
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')});
-},{threshold:.13});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-</script>
 </body>
 </html>
