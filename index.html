@@ -5,62 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Park Hyo-jung | Portfolio</title>
     <style>
-        /* Modern Reset & Smooth Scrolling */
+        /* Modern Reset & Elegant Typography */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-family: 'Cormorant Garamond', 'Pretendard', -apple-system, sans-serif;
         }
         html {
             scroll-behavior: smooth;
         }
-
-        /* Clean Dark Theme & Variables */
         body {
-            background-color: #0d1117;
-            color: #c9d1d9;
-            line-height: 1.6;
+            background-color: #1e2022; /* Deep Charcoal Gray */
+            color: #f0ece3; /* Soft Warm Beige / Pearl */
+            line-height: 1.7;
             overflow-x: hidden;
         }
 
-        /* Navigation Bar */
+        /* Language Toggle & Navigation */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(13, 17, 23, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #21262d;
+            background: rgba(30, 32, 34, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(240, 236, 227, 0.1);
             z-index: 1000;
-            padding: 1rem 2rem;
+            padding: 1.5rem 3rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .nav-logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #1f883d, #4ffb7e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            color: #dfd3c3; /* Elegant Beige */
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
         }
         .nav-links {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 2.5rem;
         }
         .nav-links a {
-            color: #8b949e;
+            color: #a8a7a4;
             text-decoration: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
             transition: color 0.3s;
         }
         .nav-links a:hover {
-            color: #4ffb7e;
+            color: #dfd3c3;
+        }
+        .lang-btn {
+            background: none;
+            border: 1px solid #dfd3c3;
+            color: #dfd3c3;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .lang-btn:hover {
+            background: #dfd3c3;
+            color: #1e2022;
         }
 
-        /* Hero Section with Premium Gradients */
+        /* Hero Section with Sophisticated Palette */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -69,170 +86,180 @@
             align-items: center;
             text-align: center;
             padding: 2rem;
-            background: radial-gradient(circle at 50% 30%, #161b22 0%, #0d1117 70%);
-            position: relative;
+            background: linear-gradient(180deg, #2b2d2f 0%, #1e2022 100%);
         }
         .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
+            font-size: 4rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: #f0ece3;
             margin-bottom: 0.5rem;
-            color: #f0f6fc;
-            letter-spacing: -0.05em;
         }
         .hero h2 {
-            font-size: 1.5rem;
-            font-weight: 400;
-            color: #8b949e;
-            margin-bottom: 2rem;
+            font-size: 1.25rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: #dfd3c3;
+            text-transform: uppercase;
+            margin-bottom: 2.5rem;
         }
         .hero .btn {
             display: inline-block;
-            padding: 0.8rem 2rem;
-            background: linear-gradient(45deg, #1f883d, #2ea44f);
-            color: #ffffff;
+            padding: 0.9rem 2.5rem;
+            border: 1px solid #dfd3c3;
+            color: #dfd3c3;
             text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 15px rgba(31, 136, 61, 0.3);
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            transition: all 0.4s ease;
         }
         .hero .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(79, 251, 126, 0.4);
+            background: #dfd3c3;
+            color: #1e2022;
+            transform: translateY(-2px);
         }
 
         /* Section Layouts */
         section {
-            padding: 8rem 2rem 4rem 2rem;
-            max-width: 1000px;
+            padding: 10rem 2rem 6rem 2rem;
+            max-width: 940px;
             margin: 0 auto;
         }
         .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #f0f6fc;
-            margin-bottom: 3rem;
-            position: relative;
-            display: inline-block;
-        }
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 40px;
-            height: 3px;
-            background-color: #1f883d;
-            border-radius: 2px;
+            font-size: 1.75rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            color: #dfd3c3;
+            margin-bottom: 4rem;
+            text-transform: uppercase;
+            text-align: center;
         }
 
         /* About Me Section */
         .about-content {
-            background: #161b22;
-            border: 1px solid #21262d;
-            border-radius: 16px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: #252729; /* Refined Charcoal Gray Box */
+            border: 1px solid rgba(240, 236, 227, 0.05);
+            border-radius: 2px;
+            padding: 3.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
         .about-content p {
-            font-size: 1.1rem;
-            color: #c9d1d9;
-            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+            color: #d1cbc4;
+            margin-bottom: 1.8rem;
             word-break: keep-all;
+            font-weight: 300;
+        }
+        .about-content p:last-child {
+            margin-bottom: 0;
         }
 
-        /* Projects Section (Responsive Grid) */
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+        /* Projects Section */
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4rem;
         }
         .project-card {
-            background: #161b22;
-            border: 1px solid #21262d;
-            border-radius: 16px;
-            padding: 2rem;
-            transition: transform 0.3s, border-color 0.3s;
+            background: #252729;
+            border-left: 3px solid #dfd3c3;
+            padding: 2.5rem;
+            transition: transform 0.3s;
         }
         .project-card:hover {
-            transform: translateY(-5px);
-            border-color: #30363d;
+            transform: translateX(5px);
         }
-        .project-tag {
-            display: inline-block;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #4ffb7e;
-            background: rgba(31, 136, 61, 0.15);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            margin-bottom: 1rem;
+        .project-meta {
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            color: #a8a7a4;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
         }
         .project-card h3 {
-            color: #f0f6fc;
-            font-size: 1.3rem;
-            margin-bottom: 0.75rem;
+            color: #f0ece3;
+            font-size: 1.4rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            letter-spacing: 0.02em;
         }
         .project-card p {
             font-size: 0.95rem;
-            color: #8b949e;
+            color: #b2ada5;
+            font-weight: 300;
         }
 
         /* Skills Section */
-        .skills-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
         }
-        .skill-badge {
-            background: #21262d;
-            color: #c9d1d9;
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            border: 1px solid #30363d;
-            transition: background 0.3s, color 0.3s;
+        .skill-box {
+            background: #252729;
+            padding: 1.5rem;
+            border: 1px solid rgba(240, 236, 227, 0.05);
+            text-align: center;
         }
-        .skill-badge:hover {
-            background: #1f883d;
-            color: #ffffff;
-            border-color: #1f883d;
+        .skill-box h4 {
+            color: #dfd3c3;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+        .skill-box p {
+            font-size: 0.85rem;
+            color: #a8a7a4;
         }
 
         /* Contact Section */
         .contact-box {
-            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-            border: 1px solid #21262d;
-            border-radius: 16px;
-            padding: 3rem;
+            background: linear-gradient(180deg, #252729 0%, #1e2022 100%);
+            border: 1px solid rgba(240, 236, 227, 0.05);
+            padding: 4rem 2rem;
             text-align: center;
         }
         .contact-box p {
-            margin-bottom: 1.5rem;
-            color: #8b949e;
+            margin-bottom: 2rem;
+            color: #b2ada5;
+            font-size: 1rem;
         }
         .contact-email {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #4ffb7e;
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: #dfd3c3;
             text-decoration: none;
-            word-break: break-all;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(223, 211, 195, 0.3);
+            padding-bottom: 0.5rem;
+            transition: border-color 0.3s;
+        }
+        .contact-email:hover {
+            border-color: #dfd3c3;
         }
 
         /* Footer */
         footer {
             text-align: center;
-            padding: 3rem 2rem;
-            color: #484f58;
-            font-size: 0.85rem;
-            border-top: 1px solid #21262d;
+            padding: 4rem 2rem;
+            color: #6e6d6a;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            border-top: 1px solid rgba(240, 236, 227, 0.05);
         }
+
+        /* Handle Translation Display Toggle via JS */
+        .lang-en { display: none; }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .nav-links { display: none; } /* Mobile simplicity */
-            section { padding-top: 6rem; }
+            nav { padding: 1rem 1.5rem; }
+            .nav-right { gap: 1.5rem; }
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.8rem; }
+            section { padding-top: 8rem; }
+            .about-content { padding: 2rem; }
         }
     </style>
 </head>
@@ -240,49 +267,72 @@
 
     <!-- Navigation -->
     <nav>
-        <div class="nav-logo">HyoJung.Park</div>
-        <ul class="nav-links">
-            <li><a href="#about">About Me</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+        <div class="nav-logo">HYOJUNG PARK</div>
+        <div class="nav-right">
+            <ul class="nav-links">
+                <li><a href="#about" class="ln-about">About</a></li>
+                <li><a href="#projects" class="ln-projects">Projects</a></li>
+                <li><a href="#skills" class="ln-skills">Skills</a></li>
+                <li><a href="#contact" class="ln-contact">Contact</a></li>
+            </ul>
+            <button class="lang-btn" onclick="toggleLanguage()">EN</button>
+        </div>
     </nav>
 
     <!-- Hero Section -->
     <header class="hero">
-        <h1>Park Hyo-jung</h1>
-        <h2>Korean Dance & Big Data @ SKKU</h2>
-        <a href="#projects" class="btn">View My Work</a>
+        <h1 class="lang-kr">박효정</h1>
+        <h1 class="lang-en">Park Hyo-jung</h1>
+        <h2 class="lang-kr">무용수 & 융복합 아티스트</h2>
+        <h2 class="lang-en">Dancer & Interdisciplinary Artist</h2>
+        <a href="#projects" class="btn lang-kr">작품 보기</a>
+        <a href="#projects" class="btn lang-en">Explore Works</a>
     </header>
 
     <!-- About Me Section -->
     <section id="about">
-        <h2 class="section-title">About Me</h2>
+        <h2 class="section-title lang-kr">소개</h2>
+        <h2 class="section-title lang-en">About Me</h2>
         <div class="about-content">
-            <p>안녕하세요! 성균관대학교에서 한국무용을 전공하고 있는 박효정입니다.</p>
-            <p>무용수로서 무대 위 공간과 관객의 호흡에 대해 깊이 고민해 왔으며, 나아가 주관적인 감성과 공간적 아름다움을 객관적인 디지털 데이터의 궤적으로 전환하는 융합적 가치에 매료되어 예술 빅데이터 연구를 함께 진행하고 있습니다.</p>
-            <p>전통적인 신체의 움직임을 넘어, 데이터라는 새로운 도구를 통해 사람들에게 더 정교하고 감 감각적인 문화 예술 경험을 설계하고 제안하는 기획자가 되고자 합니다.</p>
+            <!-- Korean Version -->
+            <div class="lang-kr">
+                <p>안녕하세요, 한국무용을 기반으로 현대무용과 발레의 경계를 넘나들며 활동하는 무용수 박효정입니다.</p>
+                <p>저는 호주, 미국, 네덜란드 등 세계 각국에서 다양한 신체 언어와 춤을 체득하며 글로벌한 시각을 넓혀왔습니다. 이를 바탕으로 고유한 전통의 깊이 위에 현대적인 스펙트럼을 조화롭게 융합하는 아티스트로서 성장하고 있습니다.</p>
+                <p>신체의 정형화된 움직임에 안주하지 않고, 시각 예술 및 다학제적 미디어와의 결합을 통해 주관적인 감성과 공간의 미학을 하나의 예술 필름으로 기록하는 융복합 작업을 끊임없이 시도하고 있습니다.</p>
+            </div>
+            <!-- English Version -->
+            <div class="lang-en">
+                <p>Hello, I am Hyo-jung Park, a dancer who pushes the boundaries of art by blending Korean traditional dance, contemporary dance, and ballet.</p>
+                <p>My artistic journey across Australia, the United States, and the Netherlands has allowed me to embrace diverse movement languages and develop a truly global perspective. Harnessing this experience, I build hybrid artistic projects that harmoniously integrate classical depth with a versatile contemporary spectrum.</p>
+                <p>Refusing to settle within conventional movements, I continually explore interdisciplinary media and visual arts, capturing subjective sensibilities and spatial aesthetics into beautifully curated art films.</p>
+            </div>
         </div>
     </section>
 
     <!-- Projects Section -->
     <section id="projects">
-        <h2 class="section-title">Projects</h2>
-        <div class="project-grid">
+        <h2 class="section-title lang-kr">프로젝트</h2>
+        <h2 class="section-title lang-en">Projects</h2>
+        <div class="project-list">
             
             <!-- Project 1 -->
             <div class="project-card">
-                <span class="project-tag">Streamlit Web App</span>
-                <h3>Seoul Exhibition Dashboard</h3>
-                <p>정부 및 서울시 공공데이터 API를 기반으로 구축한 사용자 맞춤형 문화 예술 공간 큐레이션 대시보드입니다. 방문자 리뷰 텍스트 마이닝을 통한 '감성 무드 매칭 시스템'과 개인 맞춤형 '예산 최적화 필터' 기능을 구현했습니다.</p>
+                <div class="project-meta lang-kr">융복합 미술 퍼포먼스 영상 필름</div>
+                <div class="project-meta lang-en">Interdisciplinary Art Performance & Film</div>
+                <h3 class="lang-kr">빛이 우리 몸에게 주는 영향</h3>
+                <h3 class="lang-en">The Impact of Light on Our Bodies</h3>
+                <p class="lang-kr">빛이라는 무형의 물리적 자극과 신체의 감각적 반응을 춤의 궤적으로 포착한 시각 예술 필름입니다. 무대 공간 위에서 시시각각 변화하는 조명의 질감과 인간 무용수의 움직임이 지닌 유기적인 상호작용을 예술적으로 스크리닝했습니다.</p>
+                <p class="lang-en">An art film capturing the organic relationship between the intangible element of light and sensory physical responses. This project choreographically visualizes how shifting illuminations and a human dancer's trajectories interact to create a multidimensional visual experience.</p>
             </div>
 
             <!-- Project 2 -->
             <div class="project-card">
-                <span class="project-tag">Dance Video Project</span>
-                <h3>The Tree and the Forest</h3>
-                <p>인간의 집착과 내면의 디테일을 무용으로 풀어낸 졸업 비디오 영상 프로젝트입니다. 드론 촬영 기법과 핸드서클 프레임 연출을 활용해 자연 공간 속 자연물과 인간 신체의 유기적 조화를 시각화했습니다.</p>
+                <div class="project-meta lang-kr">융복합 미술 퍼포먼스 영상 필름</div>
+                <div class="project-meta lang-en">Interdisciplinary Art Performance & Film</div>
+                <h3 class="lang-kr">산소(山所) - 기억의 온도</h3>
+                <h3 class="lang-en">San-So (山所) - The Temperature of Memory</h3>
+                <p class="lang-kr">시간의 흐름 속에 박제된 기억과 상실의 감정을 공간의 분위기에 투영한 융복합 필름 프로젝트입니다. 특정 공간이 가진 시각적 아우라와 진중한 안무 동선을 결합하여, 지나간 시간의 온도를 미학적인 영상 문법으로 변환해 냈습니다[cite: 1].</p>
+                <p class="lang-en">An interdisciplinary film projecting memories frozen in time and emotional loss into a spatial setting. By pairing the visual aura of a designated site with sophisticated, solemn choreography, this piece translates the abstract temperature of passed times into an aesthetic cinematic syntax[cite: 1].</p>
             </div>
 
         </div>
@@ -290,30 +340,97 @@
 
     <!-- Skills Section -->
     <section id="skills">
-        <h2 class="section-title">Skills</h2>
-        <div class="skills-container">
-            <div class="skill-badge">Korean Dance & Choreography</div>
-            <div class="skill-badge">Python 3.9</div>
-            <div class="skill-badge">Streamlit</div>
-            <div class="skill-badge">Pandas (Data Preprocessing)</div>
-            <div class="skill-badge">Plotly (Interactive Analytics)</div>
-            <div class="skill-badge">Art Direction & PRD Planning</div>
+        <h2 class="section-title lang-kr">역량</h2>
+        <h2 class="section-title lang-en">Skills</h2>
+        <div class="skills-grid">
+            <div class="skill-box">
+                <h4 class="lang-kr">무용 스펙트럼</h4>
+                <h4 class="lang-en">Dance Spectrum</h4>
+                <p class="lang-kr">한국무용, 현대무용, 발레 융합</p>
+                <p class="lang-en">Korean Dance, Contemporary, Ballet</p>
+            </div>
+            <div class="skill-box">
+                <h4 class="lang-kr">글로벌 무대 경험</h4>
+                <h4 class="lang-en">Global Experience</h4>
+                <p class="lang-kr">호주·미국·네덜란드 연수</p>
+                <p class="lang-en">Australia, USA, Netherlands</p>
+            </div>
+            <div class="skill-box">
+                <h4 class="lang-kr">예술 연출</h4>
+                <h4 class="lang-en">Art Direction</h4>
+                <p class="lang-kr">융복합 퍼포먼스 기획 및 영상 제작</p>
+                <p class="lang-en">Interdisciplinary Film & Screen Dance</p>
+            </div>
         </div>
     </section>
 
     <!-- Contact Section -->
     <section id="contact">
-        <h2 class="section-title">Contact</h2>
+        <h2 class="section-title lang-kr">문의</h2>
+        <h2 class="section-title lang-en">Contact</h2>
         <div class="contact-box">
-            <p>새로운 융합 예술 프로젝트 제안이나 협업 관련 문의는 언제든 환영합니다.</p>
-            <a href="mailto:hyojung@example.com" class="contact-email">hyojung@example.com</a>
+            <p class="lang-kr">새로운 무대, 예술 필름 제작 및 융복합 프로젝트 협업 제안을 기다립니다.</p>
+            <p class="lang-en">Open for creative collaborations, film projects, and cross-genre artistic directions.</p>
+            <a href="mailto:suehj@naver.com" class="contact-email">suehj@naver.com</a>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Park Hyo-jung. All Rights Reserved. Built with passion at SKKU.</p>
+        <p>&copy; 2026 Park Hyo-jung. All Rights Reserved. Crafted with artistic discipline.</p>
     </footer>
 
+    <!-- Multilingual Architecture JavaScript -->
+    <script>
+        let currentLang = 'kr';
+
+        function toggleLanguage() {
+            const krElements = document.querySelectorAll('.lang-kr');
+            const enElements = document.querySelectorAll('.lang-en');
+            const btn = document.querySelector('.lang-btn');
+            
+            // Navigation text selection for smooth UX
+            const lnAbout = document.querySelector('.ln-about');
+            const lnProjects = document.querySelector('.ln-projects');
+            const lnSkills = document.querySelector('.ln-skills');
+            const lnContact = document.querySelector('.ln-contact');
+
+            if (currentLang === 'kr') {
+                // Change to English
+                krElements.forEach(el => el.style.display = 'none');
+                enElements.forEach(el => el.style.display = 'block');
+                
+                lnAbout.textContent = 'About';
+                lnProjects.textContent = 'Projects';
+                lnSkills.textContent = 'Skills';
+                lnContact.textContent = 'Contact';
+                
+                btn.textContent = 'KR';
+                currentLang = 'en';
+            } else {
+                // Change to Korean
+                krElements.forEach(el => el.style.display = 'block');
+                enElements.forEach(el => el.style.display = 'none');
+                
+                lnAbout.textContent = '소개';
+                lnProjects.textContent = '프로젝트';
+                lnSkills.textContent = '역량';
+                lnContact.textContent = '문의';
+                
+                btn.textContent = 'EN';
+                currentLang = 'kr';
+            }
+        }
+        
+        // Initial setup to guarantee element alignments
+        document.addEventListener("DOMContentLoaded", function() {
+            const enElements = document.querySelectorAll('.lang-en');
+            enElements.forEach(el => el.style.display = 'none');
+            document.querySelector('.ln-about').textContent = '소개';
+            document.querySelector('.ln-projects').textContent = '프로젝트';
+            document.querySelector('.ln-skills').textContent = '역량';
+            document.querySelector('.ln-문의' ? '.ln-문의' : '.ln-contact').textContent = '문의';
+        });
+    </script>
 </body>
 </html>
