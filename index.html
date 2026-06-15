@@ -188,7 +188,7 @@
             word-break: keep-all;
         }
 
-        /* Video Container (Responsive Responsive Wrapper) */
+        /* Video Container */
         .video-container {
             position: relative;
             padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
@@ -216,7 +216,7 @@
             border-bottom: 1px solid rgba(223, 211, 195, 0.4);
             padding-bottom: 3px;
             transition: all 0.3s;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
         .video-link-btn:hover {
             color: #f0ece3;
@@ -227,20 +227,34 @@
         .score-box, .music-box {
             background: rgba(30, 32, 34, 0.5);
             border: 1px solid rgba(240, 236, 227, 0.05);
-            padding: 1.8rem;
+            padding: 2rem;
             margin-top: 1.5rem;
         }
         .score-box h4, .music-box h4 {
             color: #dfd3c3;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             font-weight: 500;
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
             letter-spacing: 0.05em;
             border-bottom: 1px solid rgba(223, 211, 195, 0.1);
             padding-bottom: 0.5rem;
         }
+        .score-sub-title {
+            color: #dfd3c3;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin: 1.5rem 0 0.5rem 0;
+            letter-spacing: 0.02em;
+        }
+        .score-sub-title:first-of-type {
+            margin-top: 0;
+        }
         .score-list {
             list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        .score-list:last-child {
+            margin-bottom: 0;
         }
         .score-list li {
             font-size: 0.95rem;
@@ -337,7 +351,6 @@
 </head>
 <body>
 
-    <!-- Navigation -->
     <nav>
         <div class="nav-logo">HYOJUNG PARK</div>
         <div class="nav-right">
@@ -351,7 +364,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <header class="hero">
         <h1 class="lang-kr">박효정</h1>
         <h1 class="lang-en">Park Hyo-jung</h1>
@@ -361,47 +373,46 @@
         <a href="#projects" class="btn lang-en">Explore Works</a>
     </header>
 
-    <!-- About Me Section -->
     <section id="about">
         <h2 class="section-title lang-kr">소개</h2>
         <h2 class="section-title lang-en">About Me</h2>
         <div class="about-content">
             <div class="lang-kr">
-                <p>안녕하세요, 한국무용을 기반으로 현대무용과 발레의 경계를 넘나들며 활동하는 무용수 박효정입니다.</p>
+                <p>안녕하세요, 성균관대학교에서 무용을 전공하며 한국무용의 고유한 호흡을 바탕으로 현대무용과 발레의 외연을 확장해 나가는 아티스트 박효정입니다.</p>
                 <p>저는 다양한 신체 언어와 춤을 체득하며 글로벌한 시각을 넓혀왔습니다. 이를 바탕으로 고유한 전통의 깊이 위에 현대적인 스펙트럼을 조화롭게 융합하는 아티스트로서 성장하고 있습니다.</p>
-                <p>신체의 정형화된 움직임에 안주하지 않고, 시각 예술 및 다학제적 미디어와의 결합을 통해 주관적인 감성과 공간의 미학을 하나의 예술 필름으로 기록하는 융복합 작업을 끊임없이 시도하고 있습니다.</p>
+                <p>신체의 정형화된 움직임에 안주하지 않고, 시각 예술 및 다학제적 미디어와의 유기적 결합을 통해 주관적 감성과 공간의 미학을 스크린댄스(Screen Dance) 필름으로 기록하는 융복합 작업을 탐구하고 있습니다. 전통의 깊이 있는 원형 위에 현대적인 스펙트럼을 조화롭게 레이어링하여, 시간과 공간을 몸으로 번역하는 창작 프로세스를 지향합니다.</p>
             </div>
             <div class="lang-en">
-                <p>Hello, I am Hyo-jung Park, a dancer who pushes the boundaries of art by blending Korean traditional dance, contemporary dance, and ballet.</p>
+                <p>Hello, I am Hyo-jung Park, an artist majoring in Dance at Sungkyunkwan University. Rooted in the profound breath of Korean traditional dance, I constantly expand the boundaries of my movement vocabulary by integrating contemporary dance and ballet.</p>
                 <p>My artistic journey has allowed me to embrace diverse movement languages and develop a truly global perspective. Harnessing this experience, I build hybrid artistic projects that harmoniously integrate classical depth with a versatile contemporary spectrum.</p>
-                <p>Refusing to settle within conventional movements, I continually explore interdisciplinary media and visual arts, capturing subjective sensibilities and spatial aesthetics into beautifully curated art films.</p>
+                <p>Refusing to settle within conventional choreographic forms, I delve into interdisciplinary projects that merge visual arts and multi-media. My work focuses on capturing subjective sensibilities and spatial aesthetics into screen dance films, harmoniously layering classical depth with a versatile contemporary spectrum to translate space and time through the physical body.</p>
             </div>
         </div>
     </section>
 
-    <!-- Projects Section -->
     <section id="projects">
         <h2 class="section-title lang-kr">프로젝트</h2>
         <h2 class="section-title lang-en">Projects</h2>
         <div class="project-list">
             
-            <!-- Project 1 -->
             <div class="project-card">
                 <div class="project-meta lang-kr">융복합 미술 퍼포먼스 영상 필름 (중간고사 작품)</div>
                 <div class="project-meta lang-en">Interdisciplinary Art Performance & Film</div>
                 <h3 class="lang-kr">빛이 몸에 주는 영향</h3>
                 <h3 class="lang-en">The Impact of Light on the Body</h3>
                 
-                <p class="lang-kr">따뜻하고 자연적인 빛이 스며드는 공간에 도달했을 때 신체와 심상이 마주하는 평온함에서 출발한 작품입니다. 빛이라는 무형의 자극과 신체의 정서적 반응을 유기적인 안무 궤적으로 포착했습니다.</p>
-                <p class="lang-en">This piece originates from the deep sense of peace that the body and mind experience when stepping into a space filled with warm, natural light. It captures the organic relationship between the intangible stimulation of light and sensory physical responses through a flowing choreographic trajectory.</p>
+                <div class="lang-kr">
+                    <p>본 작업은 빛과 신체, 그리고 공간의 삼자 역학 관계를 탐구하는 안무적 시도입니다. 자연광이 유입되는 특정 공간에서 신체가 이완되는 감각적 경험에서 출발하여, 이를 '신체를 변형하고 제어하는 절대적 외부 조건'으로 상정했습니다. 본 작품의 핵심 명제는 <strong>“빛이 곧 안무가가 된다(Light as a Choreographer)”</strong>입니다. 움직임의 주체는 무용수의 내부 자아가 아닌 외부의 '빛'으로 전환됩니다. 빛의 유입은 움직임의 시동을 걸고, 빛의 확장은 역동성의 증폭을 가져오며, 빛의 소멸은 신체의 즉각적인 정지를 명령합니다. 신체는 빛이 닿는 국소적 부위만을 반응시키거나 암흑 속에서 철저히 침묵함으로써, 조건화된 환경에 순응하는 신체의 수동성과 유기적 반응성을 안무적 스코어로 증명합니다.</p>
+                </div>
+                <div class="lang-en">
+                    <p>This work is a choreographic exploration into the triadic relationship between light, the body, and space. Originating from the sensory experience of physical relaxation in a naturally lit space, light is defined here as an absolute external condition that alters and controls the body. The core premise of this piece is <strong>"Light as a Choreographer."</strong> The agency of movement shifts from the dancer's internal self to the external element of light. The influx of light triggers movement, its expansion amplifies the dynamic scale, and its disappearance commands an immediate physical freeze. By restricting movement strictly to the areas touched by light or remaining entirely static in darkness, the body visualizes its passivity and organic responsiveness to a conditioned environment.</p>
+                </div>
 
-                <!-- Video Embedding -->
                 <div class="video-container">
                     <iframe src="https://www.youtube.com/embed/bqVw2BAsoBk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
                 <a href="https://youtu.be/bqVw2BAsoBk?si=fobB_Fb3IA_W_r7a" target="_blank" class="video-link-btn">↗ YouTube에서 보기 (Watch on YouTube)</a>
 
-                <!-- Choreographic Score -->
                 <div class="score-box">
                     <h4 class="lang-kr">Choreographic Score (안무 스코어 구조)</h4>
                     <h4 class="lang-en">Choreographic Score Structure</h4>
@@ -410,7 +421,7 @@
                         <li><strong>01. 새벽 (Dawn):</strong> 해가 들어오지 않는 어둠. 신체의 움직임이 부재한 완전한 정적과 무(無)의 상태.</li>
                         <li><strong>02. 해돋이 (Sunrise):</strong> 서서히 해가 뜨기 시작하며, 빛이 처음으로 맞닿는 신체 부위부터 미세한 움직임이 깨어남. 알에서 생명체가 깨어나듯 신비로운 질감의 묘사.</li>
                         <li><strong>03. 정오 (Full Light):</strong> 해가 완전히 뜬 시간대. 지면에서 일어나 선 자세로 부드러운 움직임을 이어가며, 온몸의 감각을 열어 빛을 수용하고 받아내는 감각의 확장.</li>
-                        <li><strong>04. 일시적 암흑 (Temporary Darkness):</strong> 일순간 빛이 차단된 암흑의 도래. 모든 호흡과 움직임이 급격히 정지됨.</li>
+                        <li><strong>04. 일시적 암흑 (Temporary Darkness):</strong> 일순간 빛이 차단된 암흑의 도래. 모든 호흡และ 움직임이 급격히 정지됨.</li>
                         <li><strong>05. 빛의 귀환 (Return of Light):</strong> 다시 공간을 채우는 빛과 함께 지면을 훑는 움직임(Floor movement)으로 시작하여 스피드 있고 광범위하게 확장되는 폭발적인 다이내믹의 피날레.</li>
                     </ul>
                     
@@ -424,7 +435,6 @@
                 </div>
             </div>
 
-            <!-- Project 2 -->
             <div class="project-card">
                 <div class="project-meta lang-kr">융복합 미술 퍼포먼스 영상 필름</div>
                 <div class="project-meta lang-en">Interdisciplinary Art Performance & Film</div>
@@ -432,35 +442,82 @@
                 <h3 class="lang-en">San-So (山所) - The Temperature of Memory</h3>
                 
                 <div class="lang-kr">
-                    <p>묘지를 단순한 죽음의 장소가 아닌, 남겨진 사람들이 고인과의 기억을 이어가는 평온하고 온기 가득한 경계의 공간으로 재해석한 작품입니다. 네 명의 무용수가 몸을 매개로 시간의 흐름과 과거·현재의 자연스러운 공존을 수행합니다.</p>
-                    <p>엄숙함과 눈물의 서사를 넘어, 함께 앉아 음식을 나누고 웃음을 터뜨리는 산소 특유의 이중적 감각을 춤과 미학적인 영상 문법으로 구현해 냈습니다.</p>
+                    <p>우리는 흔히 묘지를 죽음이 머무는 장소로 생각한다. 그러나 나에게 산소는 죽음을 떠올리는 공간이라기보다, 남겨진 사람들이 기억을 이어가는 공간이었다. 계절이 반복되어 쌓인 흔적, 그리고 이름 모를 기억들이 조용히 머무는 장소. 그곳의 공기는 생각보다 평온했고, 햇빛은 따뜻했으며, 바람은 살아 있는 사람들의 시간을 부드럽게 스쳐 지나갔다.</p>
+                    <p>작품은 산소라는 공간이 지닌 이중적인 감각에서 출발한다. 우리는 먼저 고개를 숙여 인사를 건넨다. 이는 앞선 세대가 남긴 예의와 기억의 방식에 대한 존중이다. 그러나 그 짧은 인사가 끝난 뒤, 공간은 조금씩 다른 결을 드러낸다. 돗자리를 펴고 둘러앉아 음식을 나누고, 웃고, 이야기하는 순간들. 엄숙함만이 존재할 것이라 여겼던 장소에는 예상치 못한 생기와 온기가 스며든다.</p>
+                    <p>이 작업에서 무덤은 슬픔의 상징이 아니다. 오히려 삶과 죽음, 과거와 현재가 자연스럽게 겹쳐지는 경계의 공간이다. 얼굴조차 알지 못하는 누군가의 삶은 그 자리에 남아 있고, 우리는 그 위에서 현재의 시간을 살아낸다. 네 명의 무용수는 그 시간을 몸으로 통과하며 기억과 현재가 만나는 순간을 그려낸다.</p>
+                    <p>죽음을 기억하는 방식은 하나가 아니다. 침묵과 눈물만이 애도의 언어일 필요도 없다. 햇살 아래 함께 앉아 웃고, 음식을 나누고, 춤추는 행위 또한 누군가를 기억하는 또 다른 방법이 될 수 있다. 이 작품은 죽음을 지우기 위한 움직임이 아니라, 사라진 존재와 현재의 삶이 한 공간 안에서 조용히 공존할 수 있음을 이야기한다.</p>
+                    <p>산소(山所)는 죽음의 장소가 아니라 기억이 머무는 장소이다. 그리고 기억은 때때로 슬픔보다 따뜻한 온도로 우리 곁에 남는다.</p>
+                    <p style="border-top: 1px solid rgba(240, 236, 227, 0.1); padding-top: 1rem; color: #dfd3c3;">묘지를 단순한 죽음의 장소가 아닌, 남겨진 사람들이 고인과의 기억을 이어가는 평온하고 온기 가득한 경계의 공간으로 재해석한 작품입니다. 네 명의 무용수가 몸을 매개로 시간의 흐름과 과거·현재의 자연스러운 공존을 수행합니다. 엄숙함과 눈물의 서사를 넘어, 함께 앉아 음식을 나누고 웃음을 터뜨리는 산소 특유의 이중적 감각을 춤과 미학적인 영상 문법으로 구현해 냈습니다.</p>
                 </div>
                 <div class="lang-en">
-                    <p>A project reinterpreting the traditional gravesite ('San-So') not as a static symbol of death and grief, but as a peaceful boundary where the living extend and celebrate their connection to the departed. Four dancers pass through this shared space-time, drawing the intersection of memory and the present moment.</p>
-                    <p>Moving beyond conventional codes of sorrow, the choreography embraces the unexpected vitality, warmth, and laughter of family gatherings at a gravesite, translating this dual aesthetic into a sophisticated cinematic syntax.</p>
+                    <p>We often perceive gravesites as static domains of death. However, in this project, ‘San-So’ (an ancestral gravesite) is reinterpreted not as a tragic space of loss, but as a warm, liminal space where the living extend their connection with the departed. The piece stems from the dual sensation of 'solemnity' and 'vitality' inherent to the site. Four dancers pass through the layered accumulation of time, illustrating the natural coexistence of the past and the present. It suggests that silence and tears are not the sole languages of mourning; sharing food under the sunlight, talking, and laughing can also serve as a sublime form of remembrance through aesthetic cinematic syntax.</p>
                 </div>
 
-                <!-- Video Embedding -->
                 <div class="video-container">
                     <iframe src="https://www.youtube.com/embed/dk8rWxdXrxI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
                 <a href="https://youtu.be/dk8rWxdXrxI?si=Gfscm8c0hcvszQ7F" target="_blank" class="video-link-btn">↗ YouTube에서 보기 (Watch on YouTube)</a>
 
-                <!-- Music Text Interpretation -->
+                <div class="score-box">
+                    <h4 class="lang-kr">Movement Score (움직임 스코어 구조)</h4>
+                    <h4 class="lang-en">Movement Score Structure</h4>
+                    
+                    <div class="lang-kr">
+                        <div class="score-sub-title">[Score A] 의식의 신체: 산소에서의 예의 (산소에서의 예의를 표현할 수 있는 4가지)</div>
+                        <ul class="score-list">
+                            <li><strong>큰절:</strong> 지면과 신체를 밀착시켜 선대에 건네는 존중의 방식.</li>
+                            <li><strong>공수:</strong> 정갈하게 손을 맞잡아 의식을 준비하는 신체적 태도.</li>
+                            <li><strong>하늘에게 예의:</strong> 시선과 몸을 확장하여 초월적 존재에게 보내는 경의.</li>
+                            <li><strong>고인 애도:</strong> 부재하는 존재를 감각하고 추모하는 정적의 상태.</li>
+                        </ul>
+                        
+                        <div class="score-sub-title">[Score B] 일상의 신체: 유희와 공존 (여러 무용수들의 움직임 스코어 - 친구들끼리 노는 장면처럼 보이길 원해 무용보다 일상적 움직임 사용)</div>
+                        <ul class="score-list">
+                            <li><strong>혼자 노는 부분:</strong> 정형화되지 않은 생기를 드러내는 막춤.</li>
+                            <li><strong>만남과 동행:</strong> 친구와 만나 팔짱 끼고 뛰노는 듯한 모습을 형상화한 역동적인 움직임.</li>
+                            <li><strong>미세 소움직임:</strong> 구전 놀이인 쎄쎄쎄를 하는 듯한 작고 리드미컬한 손 동작의 교차.</li>
+                            <li><strong>리듬의 전환:</strong> 카메라 전환 후, 상체를 고정하고 발만 이용한 리듬감 있는 스텝.</li>
+                            <li><strong>자아도취:</strong> 친구를 밀어내고 순간적으로 자신의 춤과 감정에 깊이 심취한 움직임.</li>
+                            <li><strong>순환의 놀이:</strong> 그 후 '무궁화 꽃이 피었습니다' 놀이를 진행하되, 술래의 시선이 닿아 정지하는 순간 앞서 수행했던 <strong>[산소에서의 예의를 표현할 수 있는 4가지 스코어: 큰절, 공수, 하늘에게 예의, 고인 애도]</strong>를 안무 기호로 활용하여 변주하며 배치.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="lang-en">
+                        <div class="score-sub-title">[Score A] Ritualistic Movement: Etiquette at San-So</div>
+                        <ul class="score-list">
+                            <li><strong>Deep Bow (큰절):</strong> Connecting with ancestors by placing the body close to the earth.</li>
+                            <li><strong>Gongsoo (공수):</strong> Clasping hands together calmly as a sign of inner alignment.</li>
+                            <li><strong>Gesture to the Sky (하늘에게 예의):</strong> Extending gaze and torso to show respect to the transcendental.</li>
+                            <li><strong>Mourning (고인 애도):</strong> Shifting into a solemn freeze to acknowledge the departed.</li>
+                        </ul>
+                        
+                        <div class="score-sub-title">[Score B] Everyday Movement: Play and Coexistence (Pedestrian and natural movements resembling friends playing together)</div>
+                        <ul class="score-list">
+                            <li><strong>Solitary Play:</strong> Raw, unformatted gestures expressing liberated vitality.</li>
+                            <li><strong>Encounter:</strong> Linking arms with a peer, skipping together in dynamic pathways.</li>
+                            <li><strong>Micro-movements:</strong> Delicate hand gestures reminiscent of hand-clapping games.</li>
+                            <li><strong>Rhythmic Footwork:</strong> Shifting camera focus onto rhythmic steps using only the feet.</li>
+                            <li><strong>Narcissistic Absorption:</strong> Pushing a friend away to immerse entirely in one's own monologue.</li>
+                            <li><strong>The Game of Coexistence:</strong> Playing "The Mugunghwa Flower Has Bloomed" (Statues). When freezing, dancers dynamically incorporate and adapt the 4 ritualistic motifs from <strong>[Score A: Deep Bow, Gongsoo, Sky Gesture, Mourning]</strong> into their frozen forms.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="music-box">
                     <h4 class="lang-kr">Music & Sound Architecture (음악적 해석 및 일화)</h4>
                     <h4 class="lang-en">Music & Sound Architecture</h4>
                     
                     <div class="lang-kr">
                         <p><strong>작품 음악:</strong> 이하느리 — 「…Round and velvety-smooth blend…」 (박효정 재구성 버전)</p>
-                        <p style="font-size: 0.95rem; color: #b2ada5;">본 작품의 음악은 작곡가 이하느리에게 직접 전달받은 오리지널 악보를 기반으로, 산소 공간의 공기감과 시간의 레이어를 확장하기 위해 AI 기반 음원 디자인 프로그램을 활용해 음색의 질감을 새롭게 편곡·해석한 창작 요소입니다.</p>
-                        <p style="font-size: 0.95rem; color: #b2ada5; italic: font-style: italic;">"어느 날 밤, 집에서 작곡가와 함께 위스키를 마시다 잔 속의 커다란 얼음이 천천히 녹아내리며 술과 완벽히 섞이는 감각에 대해 이야기 나눈 적이 있습니다. 작곡가는 그 순간의 시각적·촉각적 영감을 바탕으로 이 곡을 써 내려갔습니다. 언뜻 어울리지 않을 것 같은 거대한 얼음과 액체가 스며들듯 섞이듯, '산소' 역시 무거운 침묵과 생생한 웃음, 과거와 현재라는 다른 차원의 시간이 부드럽게 혼합(Blend)되는 장소입니다. 이 음악은 그 공존의 온도를 가장 완벽하게 대변합니다."</p>
+                        <p style="font-size: 0.95rem; color: #b2ada5; margin-bottom: 1rem;">작품에 사용된 음악은 이하느리의 「…Round and velvety-smooth blend…」를 바탕으로 재구성한 버전입니다. 현재 공개된 연주는 피아노 독주 버전뿐이었기 때문에, 작곡가로부터 악보를 받아 AI 기반 음원 제작 프로그램을 활용해 작품의 분위기에 맞게 새롭게 편곡했습니다.</p>
+                        <p style="font-size: 0.95rem; color: #b2ada5; margin-bottom: 1rem;">저는 원곡의 피아노 선율을 그대로 재현하기보다, 산소라는 공간이 가진 공기감และ 시간의 흐름이 더 잘 드러날 수 있도록 음색과 질감을 확장하고자 했습니다. 따라서 이 음악은 원곡을 단순히 사용하는 것이 아니라, 제 작품 안에서 다시 해석된 또 하나의 창작 요소라고 볼 수 있습니다. 이 음악을 선택한 이유는 곡이 가진 감각이 작품의 정서와 닮아 있었기 때문입니다.</p>
+                        <p style="font-size: 0.95rem; color: #b2ada5; margin-bottom: 1rem;">개인적으로도 이 곡에는 특별한 기억이 있습니다. 10년 넘게 알고 지낸 피아니스트 친구를 통해 작곡가 이하느리를 소개받았고, 어느 날 함께 제 집에서 위스키를 마시고 있었습니다. 그때 제가 "큰 얼음을 넣어 마시는 게 더 좋을 것 같다"고 이야기했는데, 이하느리가 갑자기 "누나, 나 지금 떠올랐어"라고 말하며 노트에 무언가를 적기 시작했습니다. 이후 그 자리에서 떠올린 이미지가 발전해 이 곡으로 이어졌다고 들었습니다.</p>
+                        <p style="font-size: 0.95rem; color: #b2ada5;">그래서 저는 이 곡을 들을 때마다 위스키 잔 속 큰 얼음이 천천히 녹으며 액체와 섞이는 장면을 떠올립니다. 음악 역시 극적인 서사를 전달하기보다 소리들이 서로 스며들고 흩어지며 하나의 분위기를 만들어냅니다. 제가 바라본 산소 또한 그러했습니다. 산소는 죽음과 삶, 과거와 현재가 분리된 공간이 아니라 여러 시간과 기억이 겹쳐지는 장소였습니다. 고인을 향한 예의와 현재를 살아가는 우리의 웃음, 침묵과 생기가 한 공간 안에서 공존합니다. 큰 얼음이 천천히 녹아 위스키와 섞이듯, 산소에 머무는 기억 또한 시간 속에서 현재의 삶과 자연스럽게 섞여갑니다. 저는 이 음악이 가진 부드러운 혼합과 공존의 감각이 작품이 이야기하고자 하는 '기억의 온도'와 가장 잘 맞닿아 있다고 생각했습니다.</p>
                     </div>
                     
                     <div class="lang-en">
                         <p><strong>Music Score:</strong> Haneuri Lee — 「…Round and velvety-smooth blend…」 (Reconstructed by Hyo-jung Park)</p>
                         <p style="font-size: 0.9rem; color: #a8a7a4;">Based on the original music sheet provided by the composer, the soundtrack was expanded using AI-driven sound design applications to texturize the sonic depth, capturing the unique atmospheric weight of the gravesite.</p>
-                        <p style="font-size: 0.9rem; color: #a8a7a4; font-style: italic;">"The music is closely tied to an intimate memory: while sharing whiskey at home with the composer, we discussed the beautiful imagery of a large solid ice cube slowly melting and seamlessly blending into the amber liquid. Inspired by this conversation, this track was born. Just as the ice melts into the drink, 'San-So' functions as a space where seemingly contrasting elements—grief and warmth, silence and laughter, past and present—gradually dissolve into a velvety공존 (coexistence). The music beautifully encapsulates this delicate 'temperature of memory'."</p>
                     </div>
                 </div>
             </div>
@@ -468,33 +525,31 @@
         </div>
     </section>
 
-    <!-- Skills Section -->
     <section id="skills">
         <h2 class="section-title lang-kr">역량</h2>
         <h2 class="section-title lang-en">Skills</h2>
         <div class="skills-grid">
             <div class="skill-box">
                 <h4 class="lang-kr">무용 스펙트럼</h4>
-                <h4 class="nav-logo lang-en" style="font-size: 1rem; letter-spacing: 0;">Dance Spectrum</h4>
+                <h4 class="lang-en">Dance Spectrum</h4>
                 <p class="lang-kr">한국무용, 현대무용, 발레 융합</p>
                 <p class="lang-en">Korean Traditional Dance, Contemporary, Ballet Fusion</p>
             </div>
             <div class="skill-box">
                 <h4 class="lang-kr">글로벌 무대 경험</h4>
-                <h4 class="nav-logo lang-en" style="font-size: 1rem; letter-spacing: 0;">Global Experience</h4>
+                <h4 class="lang-en">Global Experience</h4>
                 <p class="lang-kr">해외 리서치 및 글로벌 신체 언어 체득</p>
                 <p class="lang-en">Cross-cultural dance research and movement residency</p>
             </div>
             <div class="skill-box">
                 <h4 class="lang-kr">예술 연출</h4>
-                <h4 class="nav-logo lang-en" style="font-size: 1rem; letter-spacing: 0;">Art Direction</h4>
+                <h4 class="lang-en">Art Direction</h4>
                 <p class="lang-kr">융복합 퍼포먼스 기획 및 스크린댄스 영상 제작</p>
                 <p class="lang-en">Interdisciplinary project planning & Screen dance production</p>
             </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
     <section id="contact">
         <h2 class="section-title lang-kr">문의</h2>
         <h2 class="section-title lang-en">Contact</h2>
@@ -505,12 +560,10 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <p>&copy; 2026 Park Hyo-jung. All Rights Reserved. Crafted with artistic discipline.</p>
     </footer>
 
-    <!-- Multilingual Architecture JavaScript -->
     <script>
         let currentLang = 'kr';
 
